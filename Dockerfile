@@ -25,9 +25,9 @@ COPY . .
 RUN npm run build
 
 # Copy template files into the dist folder
-RUN mkdir -p dist/services/staff/templates dist/services/user/templates && \
-    cp -r src/services/staff/template/* dist/services/staff/templates/ && \
-    cp -r src/services/user/template/* dist/services/user/templates/
+RUN mkdir -p dist/service/staff/templates dist/service/user/templates && \
+    cp -r src/service/staff/template/* dist/service/staff/templates/ && \
+    cp -r src/service/user/template/* dist/service/user/templates/
 
 # Expose necessary ports
 EXPOSE 3000 3002 9092 2181 6379
