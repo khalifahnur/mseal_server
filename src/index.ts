@@ -9,9 +9,9 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 
-const passport = require('passport');
+const passport = require("passport");
 
-require('./lib/passport-config');
+require("./lib/passport-config");
 
 const userrouter = require("./router/user/userrouter");
 const membershiprouter = require("./router/membership/membershiprouter");
@@ -30,7 +30,6 @@ const server = http.createServer(app);
 const port = process.env.PORT || 3002;
 const MongodbConn = process.env.MONGODB_CONN || "";
 
-
 const corsOptions = {
   origin: ["https://mseal-membership.vercel.app"], // local testing => "http://localhost:3001"
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -40,11 +39,12 @@ const corsOptions = {
 };
 
 app.use(helmet());
-app.use(morgan('combined'));
+app.use(morgan("combined"));
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true, limit: "5mb" }));
 app.use(bodyParser.json({ limit: "1mb" }));
+import session from "express-session";
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -63,10 +63,22 @@ mongoose
     console.log("MongoDB connection Error", error);
   });
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 app.use("/mseal/auth-user", userrouter);
 app.use("/mseal/membership", membershiprouter);
@@ -77,11 +89,17 @@ app.use("/mseal/merchandise", merchandiserouter);
 app.use("/mseal/auth-admin", adminrouter);
 app.use("/mseal/staff-auth", staffrouter);
 
-
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Something went wrong!" });
-});
+app.use(
+  (
+    err: Error,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    console.error(err.stack);
+    res.status(500).json({ message: "Something went wrong!" });
+  }
+);
 
 server
   .listen(port, () => {
