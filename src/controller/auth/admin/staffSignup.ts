@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 const StaffModel = require("../../../model/staff");
-const sendStaffValidationCode = require("../../../service/waiter/email/sendValidation");
+const sendStaffValidationCode = require("../../../service/staff/email/sendValidation");
 const Admin = require("../../../model/admin");
 
 interface AuthenticatedRequest extends Request {

@@ -27,10 +27,10 @@ function generateTicketId({ eventId, quantity, index, timestamp }: TicketIdParam
   const dateObj = new Date(timestamp ?? Date.now());
   const date = formatDate(dateObj);
   const time = formatTime(dateObj);
-  const rand = generateRandomString(5);
+  //const rand = generateRandomString(5);
   const paddedIndex = padNumber(index);
 
-  return `ms-${eventId}-${date}-${time}-${quantity}-${rand}-${paddedIndex}`;
+  return `MS-${eventId}-${date}-${quantity}-${paddedIndex}`;
 }
 
 module.exports = generateTicketId;

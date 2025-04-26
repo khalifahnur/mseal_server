@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import getSecretKey from "../../../lib/getSecretKey";
 import { verifyPassword } from "../../../lib/hashPassword";
 
-const sendSigninEmail = require("../../../service/waiter/email/sendSignin");
+const sendSigninEmail = require("../../../service/staff/email/sendSignin");
 const Staff = require("../../../model/staff");
 
 const loginStaff = async (req: Request, res: Response) => {
@@ -33,7 +33,6 @@ const loginStaff = async (req: Request, res: Response) => {
     return res.status(200).json({
       token,
       staff: {
-        restaurantId: staff.restaurantId,
         firstname: staff.firstname,
         lastname: staff.lastname,
         phoneNumber: staff.phoneNumber,
