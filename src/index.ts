@@ -31,16 +31,16 @@ const port = process.env.PORT || 3002;
 const MongodbConn = process.env.MONGODB_CONN || "";
 
 const corsOptions = {
-  origin: "https://mseal-membership.vercel.app", // local testing => "http://localhost:3001"
+  origin: "http://localhost:3000",//"https://mseal-membership.vercel.app", // local testing => "http://localhost:3001"
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
   exposedHeaders: ["Set-Cookie"],
 };
 
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(morgan("combined"));
-app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true, limit: "5mb" }));
 app.use(bodyParser.json({ limit: "1mb" }));
