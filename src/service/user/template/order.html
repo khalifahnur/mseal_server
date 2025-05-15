@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .logo {
+            max-height: 60px;
+            width: auto;
+        }
+        .confirmation-message {
+            padding: 20px 0;
+            text-align: center;
+            font-size: 18px;
+        }
+        .order-details {
+            padding: 20px 0;
+        }
+        .order-details h2 {
+            color: #333333;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eeeeee;
+        }
+        th {
+            background-color: #f8f8f8;
+        }
+        .total-row {
+            font-weight: bold;
+        }
+        .customer-info {
+            margin-bottom: 20px;
+        }
+        .customer-info h2 {
+            color: #333333;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eeeeee;
+            text-align: center;
+            font-size: 12px;
+            color: #888888;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .note {
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #f8f8f8;
+            border-left: 4px solid #4CAF50;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            table {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://via.placeholder.com/200x60" alt="Your Company Logo" class="logo">
+            <h1>Order Confirmation</h1>
+        </div>
+        
+        <div class="confirmation-message">
+            <p>Thank you for your order, {{customerName}}!</p>
+            <p>Your order has been received and is being processed.</p>
+        </div>
+        
+        <div class="order-details">
+            <h2>Order Information</h2>
+            <p><strong>Order Number:</strong> {{orderNumber}}</p>
+            <p><strong>Order Date:</strong> {{orderDate}}</p>
+            <p><strong>Payment Method:</strong> {{paymentMethod}}</p>
+            
+            <h2>Order Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each items}}
+                    <tr>
+                        <td>{{this.name}}</td>
+                        <td>{{this.quantity}}</td>
+                        <td>Ksh.{{this.price}}</td>
+                        <td>Ksh.{{this.total}}</td>
+                    </tr>
+                    {{/each}}
+                    <tr>
+                        <td colspan="3" style="text-align: right;"><strong>Subtotal:</strong></td>
+                        <td>Ksh.{{subtotal}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: right;"><strong>Shipping:</strong></td>
+                        <td>Ksh.{{shipping}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: right;"><strong>Tax:</strong></td>
+                        <td>Ksh.{{tax}}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="3" style="text-align: right;"><strong>TOTAL:</strong></td>
+                        <td>Ksh.{{total}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="customer-info">
+            <h2>Shipping Information</h2>
+            <p>
+                {{shippingName}}<br>
+                {{shippingAddress.street}}<br>
+                {{shippingAddress.city}}, {{shippingAddress.state}} {{shippingAddress.zip}}<br>
+                KE
+            </p>
+            
+            <h2>Billing Information</h2>
+            <p>
+                {{billingName}}<br>
+                {{billingAddress.street}}<br>
+                {{billingAddress.city}}, {{billingAddress.state}} {{billingAddress.zip}}<br>
+                KE
+            </p>
+        </div>
+        
+        <div class="note">
+            <p><strong>Estimated Delivery Date:</strong> {{estimatedDelivery}}</p>
+            <p>You will receive a shipping confirmation email with tracking information once your order has been shipped.</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a class="button">Track Your Order</a>
+        </div>
+        
+        <div class="footer">
+            <p>If you have any questions about your order, please contact our customer service team at:</p>
+            <p><a href="mailto:support@mseal.com">support@m-seal.com</a> or call us at <a href="tel:+254712345678">+254 (7123) 456-78</a></p>
+            <p>&copy; 2025 M-seal. All rights reserved.</p>
+            <p>Muranga Stadium, Muranga County, Kenya</p>
+        </div>
+    </div>
+</body>
+</html>
