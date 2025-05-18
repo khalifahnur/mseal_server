@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const Handlebars = require('handlebars');
+const Merchandise = require('../../../model/merchandise');
 
 
 const transporter = nodemailer.createTransport({
@@ -21,10 +22,22 @@ const htmlTemplate = fs.readFileSync(
 
 const htmlCompiled = Handlebars.compile(htmlTemplate);
 
-const sendOrderConfirmation = async (order:any, recipientEmail:string) => {
+const sendOrderConfirmation = async (order: any, recipientEmail: string, metadata: any) => {
   try {
+    const productIds = order.items.map((item: any) => item.productId);
+
+    const productsFromDB = await Merchandise.find({ _id: { $in: productIds } });
+
+    const productMap = new Map();
+    productsFromDB.forEach((product: any) => {
+      productMap.set(product._id.toString(), {
+        name: product.name,
+        imageUrl: product.imageUrl,
+      });
+    });
+
     const templateData = {
-      customerName: `${order.user.firstName}${order.user.lastName}`,
+      customerName: `${metadata.firstName} ${metadata.lastName}`,
       orderNumber: order.orderId,
       orderDate: new Date(order.createdAt).toLocaleDateString('en-GB', {
         year: 'numeric',
@@ -32,28 +45,30 @@ const sendOrderConfirmation = async (order:any, recipientEmail:string) => {
         day: 'numeric',
       }),
       paymentMethod: 'M-Pesa via Paystack',
-      items: order.items.map((item:any) => ({
-        name: item.productId.name,
-        quantity: item.quantity,
-        price: item.price.toFixed(2),
-        total: (item.quantity * item.price).toFixed(2),
-      })),
+      items: order.items.map((item: any) => {
+        const productDetails = productMap.get(item.productId.toString());
+        return {
+          name: productDetails?.name || 'Unknown Item',
+          imageUrl: productDetails?.imageUrl || '',
+          quantity: item.quantity,
+          price: item.price.toFixed(2),
+          total: (item.quantity * item.price).toFixed(2),
+        };
+      }),
       subtotal: order.totalAmount.toFixed(2),
-      shipping: '0.00',
+      shipping: '50.00',
       tax: '0.00',
       total: order.totalAmount.toFixed(2),
-      shippingName: order.shippingAddress.name,
+      shippingName:`${metadata.firstName} ${metadata.lastName}`,
       shippingAddress: {
         street: order.shippingAddress.street,
         city: order.shippingAddress.city,
-        state: order.shippingAddress.state || '',
         zip: order.shippingAddress.postalCode || '',
       },
-      billingName: order.shippingAddress.name || order.userId.name,
+      billingName:`${metadata.firstName} ${metadata.lastName}`,
       billingAddress: {
         street: order.shippingAddress.street,
         city: order.shippingAddress.city,
-        state: order.shippingAddress.state || '',
         zip: order.shippingAddress.postalCode || '',
       },
       estimatedDelivery: order.estimatedDelivery
@@ -61,24 +76,23 @@ const sendOrderConfirmation = async (order:any, recipientEmail:string) => {
         : null,
     };
 
-    // Render templates
     const htmlContent = htmlCompiled(templateData);
 
     const mailOptions = {
       from: '"M-seal Team" <no-reply@yourdomain.com>',
       to: recipientEmail,
-      subject: `Order Confirmation #${order.orderId}`,
+      subject: `Your M-seal order confirmed #-${order.orderId}`,
       html: htmlContent,
     };
 
-    // Send email
     const info = await transporter.sendMail(mailOptions);
     console.log('Email sent: %s', info.messageId);
     return info;
-  } catch (error:any) {
+  } catch (error: any) {
     console.error('Error sending email:', error);
     throw new Error(`Failed to send order confirmation: ${error.message}`);
   }
 };
+
 
 module.exports = sendOrderConfirmation;
