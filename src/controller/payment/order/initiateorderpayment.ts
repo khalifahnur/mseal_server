@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 const User = require("../../../model/user");
 const Order = require("../../../model/order");
+const generateOrderId = require("../../../lib/generateOrderId");
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ const initiateorderpayment = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
-  const { items, totalAmount, shippingAddress } = req.body;
+  const { items, totalAmount, shippingAddress,phoneNumber } = req.body;
   const userId = req.user?.id;
 
   if (!PAYSTACK_SECRET_KEY) {
@@ -37,7 +38,7 @@ const initiateorderpayment = async (
       return res.status(404).json({ error: "User not found" });
     }
 
-    const { email, phoneNumber } = userObj;
+    const { email,firstName,lastName } = userObj;
 
     if (!email) {
       return res.status(400).json({ error: "User email is required" });
@@ -46,13 +47,11 @@ const initiateorderpayment = async (
       return res.status(400).json({ error: "User phone number is required" });
     }
 
-    console.log(phoneNumber);
-
     const response = await axios.post(
       "https://api.paystack.co/charge",
       {
         email,
-        amount: totalAmount * 100, // Convert to kobo
+        amount: totalAmount * 100,
         currency: "KES",
         mobile_money: {
           phone: phoneNumber,
@@ -60,6 +59,8 @@ const initiateorderpayment = async (
         },
         metadata: {
           userId,
+          firstName,
+          lastName,
         },
       },
       {
@@ -78,8 +79,9 @@ const initiateorderpayment = async (
       transactionReference: response.data.data.reference,
       status: "Pending",
       paymentStatus: "Pending",
-      orderId: (await Order.countDocuments()) + 1,
-    });
+      orderId: generateOrderId(),
+    }
+  );
     await order.save();
 
     res.json({
