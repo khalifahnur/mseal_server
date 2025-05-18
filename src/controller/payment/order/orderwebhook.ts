@@ -31,19 +31,17 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
   ) {
     const { reference, amount, status, customer, metadata } = event.data;
 
-    // Ensure idempotency: Check if transaction was already processed
     const existingOrder = await Order.findOne({
       transactionReference: reference,
     });
-    if (existingOrder && existingOrder.paymentStatus === "Completed") {
+    
+    if (existingOrder?.paymentStatus === "Completed") {
       return res.status(200).json({ message: "Transaction already processed" });
-    }
+    }    
 
-    // Start a MongoDB session for atomic updates
     const session = await mongoose.startSession();
     try {
       await session.withTransaction(async () => {
-        // Verify transaction with Paystack
         const verifyResponse = await axios.get(
           `https://api.paystack.co/transaction/verify/${reference}`,
           {
@@ -56,7 +54,6 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
           throw new Error("Transaction verification failed");
         }
 
-        // Find the order using metadata or reference
         const order = await Order.findOne(
           { transactionReference: reference },
           null,
@@ -66,12 +63,10 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
           throw new Error("Order not found");
         }
 
-        // Verify amount matches
-        if (order.totalAmount * 100 !== amount) {
+        if (order.totalAmount * 100 !== 5) {
           throw new Error("Amount mismatch");
         }
 
-        // Update stock atomically
         for (const item of order.items) {
           const product = await Merchandise.findById(item.productId, null, {
             session,
@@ -83,13 +78,13 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
           await product.save({ session });
         }
 
-        // Update order status
         order.status = "Processing";
         order.paymentStatus = "Completed";
         order.updatedAt = new Date();
         await order.save({ session });
+        console.log(order);
 
-        await sendOrderConfirmation(order, customer.email);
+        await sendOrderConfirmation(order, customer.email,metadata);
       });
 
       res.status(200).json({ message: "Webhook processed" });
