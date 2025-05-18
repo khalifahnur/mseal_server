@@ -32,7 +32,7 @@ const googleSignin = async (req, res) => {
             path: "/",
             maxAge: 24 * 60 * 60 * 1000,
         })
-            .redirect("http://localhost:3000/home");
+            .redirect("https://mseal-membership.vercel.app/home");
     }
     catch (err) {
         console.error("Google auth error:", err);

@@ -31,7 +31,11 @@ const port = process.env.PORT || 3002;
 const MongodbConn = process.env.MONGODB_CONN || "";
 
 const corsOptions = {
-  origin:  ["https://mseal-membership.vercel.app","https://mseal-master.vercel.app"], // local testing => "http://localhost:3001"
+  origin: [
+    "https://mseal-membership.vercel.app",
+    "https://mseal-master.vercel.app",
+    "http://localhost:3000",
+  ], // local testing => "http://localhost:3001"
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],

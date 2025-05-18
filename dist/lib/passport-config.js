@@ -10,7 +10,7 @@ dotenv_1.default.config();
 passport_1.default.use(new passport_google_oauth20_1.Strategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3002/mseal/auth-user/google/callback",
+    callbackURL: "https://msealserver-production.up.railway.app/mseal/auth-user/google/callback",
 }, (accessToken, refreshToken, profile, done) => {
     // You can save or process the profile here if needed
     return done(null, profile);
