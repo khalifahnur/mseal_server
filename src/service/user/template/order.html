@@ -22,7 +22,8 @@
         .header {
             text-align: center;
             padding: 20px 0;
-            border-bottom: 1px solid #eeeeee;
+            border-bottom: 10px solid #000;
+            background-color: #fae115;
         }
         .logo {
             max-height: 60px;
@@ -34,7 +35,7 @@
             font-size: 18px;
         }
         .order-details {
-            padding: 20px 0;
+            padding: 5px 0;
         }
         .order-details h2 {
             color: #333333;
@@ -68,10 +69,13 @@
         .footer {
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 1px solid #eeeeee;
             text-align: center;
             font-size: 12px;
-            color: #888888;
+            color: #3d3c38;
+            background-color: #fae115;
+            border-top: 3px solid #000;
+            width: 100%;
+            max-width: 944px;
         }
         .button {
             display: inline-block;
@@ -88,6 +92,9 @@
             background-color: #f8f8f8;
             border-left: 4px solid #4CAF50;
         }
+        .imgUrl{
+            width: 50px; height: 50px; object-fit: cover; margin-right: 10px;
+        }
         @media only screen and (max-width: 600px) {
             .container {
                 padding: 10px;
@@ -101,8 +108,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="https://via.placeholder.com/200x60" alt="Your Company Logo" class="logo">
-            <h1>Order Confirmation</h1>
+            <img src="https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png" alt="mseal Logo" class="logo" />
+            <h2 style="font-size:42px;font-weight:600;font-style:normal;font-stretch:normal;line-height:normal;letter-spacing:normal;text-align:center;color:#000000;margin:25px 0">Order confirmed</h2>
         </div>
         
         <div class="confirmation-message">
@@ -112,10 +119,10 @@
         
         <div class="order-details">
             <h2>Order Information</h2>
-            <p><strong>Order Number:</strong> {{orderNumber}}</p>
+            <p><strong>Order Number:</strong> #-{{orderNumber}}</p>
             <p><strong>Order Date:</strong> {{orderDate}}</p>
             <p><strong>Payment Method:</strong> {{paymentMethod}}</p>
-            
+            <hr />
             <h2>Order Summary</h2>
             <table>
                 <thead>
@@ -129,7 +136,10 @@
                 <tbody>
                     {{#each items}}
                     <tr>
-                        <td>{{this.name}}</td>
+                        <div style="display: flex; align-items: center;">
+                            <img src="{{this.imageUrl}}" alt="{{this.name}}" class="imgUrl" />
+                            <span>{{this.name}}</span>
+                          </div>
                         <td>{{this.quantity}}</td>
                         <td>Ksh.{{this.price}}</td>
                         <td>Ksh.{{this.total}}</td>
@@ -154,13 +164,13 @@
                 </tbody>
             </table>
         </div>
-        
+        <img src="https://ci3.googleusercontent.com/meips/ADKq_NYcaTCXJASTcXc2daG_goKcFYL19p-0ygK2gaP6d9b_-R7oTHbdah9Nc7qpt6-RQlEJRSTkOzhEDlIa3EcVbVh-FY34SoLl1cWDxXh-eDfNAdLe7YTBWS5GM0GDX30=s0-d-e1-ft#https://s3-eu-west-1.amazonaws.com/glovo-emails/static/dist/img/wave.png" alt="separator" style="width:100%;object-fit:cover" class="CToWUd" data-bit="iit">
         <div class="customer-info">
             <h2>Shipping Information</h2>
             <p>
                 {{shippingName}}<br>
                 {{shippingAddress.street}}<br>
-                {{shippingAddress.city}}, {{shippingAddress.state}} {{shippingAddress.zip}}<br>
+                {{shippingAddress.city}}, {{shippingAddress.zip}}<br>
                 KE
             </p>
             
@@ -168,11 +178,11 @@
             <p>
                 {{billingName}}<br>
                 {{billingAddress.street}}<br>
-                {{billingAddress.city}}, {{billingAddress.state}} {{billingAddress.zip}}<br>
+                {{billingAddress.city}}, {{billingAddress.zip}}<br>
                 KE
             </p>
         </div>
-        
+        <img src="https://ci3.googleusercontent.com/meips/ADKq_NYcaTCXJASTcXc2daG_goKcFYL19p-0ygK2gaP6d9b_-R7oTHbdah9Nc7qpt6-RQlEJRSTkOzhEDlIa3EcVbVh-FY34SoLl1cWDxXh-eDfNAdLe7YTBWS5GM0GDX30=s0-d-e1-ft#https://s3-eu-west-1.amazonaws.com/glovo-emails/static/dist/img/wave.png" alt="separator" style="width:100%;object-fit:cover" class="CToWUd" data-bit="iit">
         <div class="note">
             <p><strong>Estimated Delivery Date:</strong> {{estimatedDelivery}}</p>
             <p>You will receive a shipping confirmation email with tracking information once your order has been shipped.</p>
@@ -183,6 +193,7 @@
         </div>
         
         <div class="footer">
+            <div style="width:100%;background-size:cover;background-position:center;height:60px;background-image:url('https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png')"></div>
             <p>If you have any questions about your order, please contact our customer service team at:</p>
             <p><a href="mailto:support@mseal.com">support@m-seal.com</a> or call us at <a href="tel:+254712345678">+254 (7123) 456-78</a></p>
             <p>&copy; 2025 M-seal. All rights reserved.</p>
