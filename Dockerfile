@@ -32,6 +32,7 @@ RUN mkdir -p dist/service/staff/template dist/service/user/template && \
 # Expose necessary ports
 EXPOSE 3000 3002 9092 2181 6379
 
+
 # Start Redis server and then Node.js app
 CMD redis-server --daemonize yes && node dist/index.js
 

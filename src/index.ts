@@ -10,7 +10,7 @@ import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 
 const passport = require("passport");
-
+const consumeEmailQueue = require("./lib/queue/order_email/consumer");
 require("./lib/passport-config");
 
 const userrouter = require("./router/user/userrouter");
@@ -35,6 +35,7 @@ const corsOptions = {
     "https://mseal-membership.vercel.app",
     "https://mseal-master.vercel.app",
     "http://localhost:3000",
+    "http://localhost:5672",
   ], // local testing => "http://localhost:3001"
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
@@ -93,6 +94,10 @@ app.use("/mseal/merchandise", merchandiserouter);
 app.use("/mseal/auth-admin", adminrouter);
 app.use("/mseal/staff-auth", staffrouter);
 
+consumeEmailQueue().catch(({ err }: any) => {
+  console.error("Failed to start email consumer:", err);
+});
+
 app.use(
   (
     err: Error,
@@ -112,3 +117,5 @@ server
   .on("error", (err) => {
     console.error("Server error:", err);
   });
+
+

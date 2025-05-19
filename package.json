@@ -12,6 +12,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.7",
     "@types/bcrypt": "^5.0.2",
     "@types/body-parser": "^1.19.5",
     "@types/cookie-parser": "^1.4.8",
@@ -28,6 +29,7 @@
   },
   "dependencies": {
     "@types/nodemailer": "^6.4.17",
+    "amqplib": "^0.10.8",
     "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
     "body-parser": "^2.2.0",
