@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import nodemailer, { SentMessageInfo } from "nodemailer";
 
+require('dotenv').config();
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -23,7 +25,7 @@ const sendStaffSigninEmail = (recipientEmail: string) => {
   );
 
   const mailOptions = {
-    from: '"Mseal Team" <no-reply@mseal.com>',
+    from: `"M-seal Team" <${process.env.GMAIL_USER}>`,
     to: recipientEmail,
     subject: "Mseal staff Sign-In Verification",
     html: personalizedHtmlTemplate,

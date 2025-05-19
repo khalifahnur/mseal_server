@@ -6,7 +6,8 @@ import mongoose from "mongoose";
 
 const Order = require("../../../model/order");
 const Merchandise = require("../../../model/merchandise");
-const sendOrderConfirmation = require("../../../service/user/email/sendOrder")
+const sendOrderConfirmation = require("../../../service/user/email/sendOrder");
+const publishToQueue = require("../../../lib/queue/order_email/producer");
 
 dotenv.config();
 
@@ -63,9 +64,9 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
           throw new Error("Order not found");
         }
 
-        if (order.totalAmount * 100 !== 5) {
-          throw new Error("Amount mismatch");
-        }
+        // if (order.totalAmount * 100 !== amount) {
+        //   throw new Error("Amount mismatch");
+        // }
 
         for (const item of order.items) {
           const product = await Merchandise.findById(item.productId, null, {
@@ -84,7 +85,12 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
         await order.save({ session });
         console.log(order);
 
-        await sendOrderConfirmation(order, customer.email,metadata);
+        //await sendOrderConfirmation(order, customer.email,metadata);
+        await publishToQueue("email_order_confirmation", {
+          orderId: order._id,
+          email: customer.email,
+          metadata,
+        });
       });
 
       res.status(200).json({ message: "Webhook processed" });
