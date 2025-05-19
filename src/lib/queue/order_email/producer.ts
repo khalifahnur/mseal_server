@@ -1,6 +1,5 @@
 import amqp from "amqplib";
-//process.env.RABBITMQ_PRIVATE_URL ||
-const rabbitMQUrl = 'amqp://guest:guest@localhost:5672';
+const rabbitMQUrl = process.env.RABBITMQ_PRIVATE_URL ||'amqp://guest:guest@localhost:5672';
 
 interface QueueMessage {
   orderId: string;

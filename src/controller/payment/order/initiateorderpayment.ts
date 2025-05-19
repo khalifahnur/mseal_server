@@ -51,7 +51,7 @@ const initiateorderpayment = async (
       "https://api.paystack.co/charge",
       {
         email,
-        amount: 5 * 100,
+        amount: totalAmount * 100,
         currency: "KES",
         mobile_money: {
           phone: phoneNumber,
