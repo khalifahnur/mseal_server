@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <title>Match Ticket Confirmation</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333333;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+      }
+      .header {
+        text-align: center;
+        padding: 20px 0;
+        border-bottom: 10px solid #000;
+        background-color: #fae115;
+      }
+      .logo {
+        max-height: 60px;
+        width: auto;
+      }
+      .confirmation-message {
+        padding: 20px 0;
+        text-align: center;
+        font-size: 18px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #eeeeee;
+      }
+      th {
+        background-color: #f8f8f8;
+      }
+      .total-row {
+        font-weight: bold;
+      }
+      .customer-info {
+        margin-bottom: 20px;
+      }
+      .customer-info h2 {
+        color: #333333;
+        font-size: 18px;
+        margin-bottom: 15px;
+      }
+      .footer {
+        margin-top: 30px;
+        padding-top: 20px;
+        text-align: center;
+        font-size: 12px;
+        color: #3d3c38;
+        background-color: #fae115;
+        border-top: 3px solid #000;
+        width: 100%;
+        max-width: 944px;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+      .note {
+        padding: 15px;
+        margin: 20px 0;
+        background-color: #f8f8f8;
+        border-left: 4px solid #4caf50;
+      }
+      .qr-code {
+        text-align: center;
+        margin: 20px 0;
+      }
+      .qr-code img {
+        max-width: 200px;
+        height: auto;
+      }
+
+      .left,
+      .right {
+        padding: 20px;
+        flex: 1;
+        position: relative;
+      }
+      /*  */
+
+      .separator {
+        width: auto;
+        height: 100%;
+        transform: rotate(90deg);
+        object-fit: cover;
+      }
+
+      .zigzag {
+        width: 30px;
+        overflow: hidden;
+      }
+
+      .title {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .important-info {
+        font-weight: bold;
+        color: #ff0000;
+      }
+
+      @media only screen and (max-width: 600px) {
+        .container {
+          padding: 10px;
+        }
+        table {
+          font-size: 14px;
+        }
+      }
+    </style>
+    <style>
+      .ticket-container {
+        width: 100%;
+        max-width: 600px;
+        position: relative;
+      }
+
+      .ticket {
+        background-color: #fadf158f;
+        color: rgb(0, 0, 0);
+        position: relative;
+        height: 200px;
+        width: 100%;
+        display: flex;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+      }
+
+      /* Zigzag edges */
+      .ticket::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, transparent 8px, #fae115 0) bottom
+            left,
+          linear-gradient(-45deg, transparent 8px, #fae115 0) bottom right,
+          linear-gradient(135deg, transparent 8px, #fae115 0) top left,
+          linear-gradient(-135deg, transparent 8px, #fae115 0) top right;
+        background-size: 16px 16px;
+        background-repeat: repeat-x;
+        z-index: -1;
+      }
+
+      /* Semicircle cutouts */
+      .semicircle-top {
+        position: absolute;
+        top: -15px;
+        right: 100px;
+        width: 30px;
+        height: 30px;
+        background-color: #fff;
+        border-radius: 50%;
+      }
+
+      .semicircle-bottom {
+        position: absolute;
+        bottom: -15px;
+        right: 100px;
+        width: 30px;
+        height: 30px;
+        background-color: #fff;
+        border-radius: 50%;
+      }
+
+      /* Zigzag separator */
+      .ticket-separator {
+        position: absolute;
+        top: 0;
+        right: 115px;
+        height: 100%;
+        width: 2px;
+        background: repeating-linear-gradient(
+          to bottom,
+          white,
+          white 5px,
+          transparent 5px,
+          transparent 10px
+        );
+      }
+
+      .ticket-left {
+        width: 70%;
+        padding: 20px;
+        position: relative;
+      }
+
+      .ticket-right {
+        width: 30%;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .football-icon {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+      }
+
+      .title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 10px;
+        margin-left: 60px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .subtitle {
+        font-size: 12px;
+        margin-top: 10px;
+        opacity: 0.8;
+      }
+
+      .teams {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 15px;
+        padding: 8px;
+        border-radius: 4px;
+      }
+
+      .team {
+        font-weight: bold;
+        font-size: 13px;
+      }
+
+      .vs {
+        margin: 0 15px;
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      .date-time {
+        margin-top: 15px;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      .barcode {
+        width: 100%;
+        height: 50px;
+        background: repeating-linear-gradient(
+          to right,
+          black 0px,
+          black 2px,
+          white 2px,
+          white 4px,
+          black 4px,
+          black 5px,
+          white 5px,
+          white 7px
+        );
+        margin-bottom: 10px;
+        transform: rotate(90deg);
+        position: absolute;
+        top: 0;
+        left: 270px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img
+          src="https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png"
+          alt="mseal Logo"
+          class="logo"
+        />
+        <h2
+          style="
+            font-size: 42px;
+            font-weight: 600;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: normal;
+            letter-spacing: normal;
+            text-align: center;
+            color: #000000;
+            margin: 25px 0;
+          "
+        >
+          Match Ticket
+        </h2>
+      </div>
+
+      <div class="confirmation-message">
+        <p>Thank you for your purchase, {{customerName}}!</p>
+      </div>
+      <div class="ticket-container">
+        <div class="ticket">
+          <!-- Semicircle cutouts -->
+          <div class="semicircle-top"></div>
+          <div class="semicircle-bottom"></div>
+
+          <!-- Zigzag separator -->
+          <div class="ticket-separator"></div>
+
+          <!-- Left side of the ticket -->
+          <div class="ticket-left">
+            <!-- Football icon -->
+            <div class="football-icon">
+              <div
+                style="
+                  width: 100%;
+                  background-size: cover;
+                  background-position: center;
+                  height: 60px;
+                  background-image: url('https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png');
+                "
+              ></div>
+            </div>
+
+            <!-- <h1 class="title">Football Tournament</h1>
+                <p class="subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p> -->
+
+            <div class="teams">
+              <span class="team">{{match}}</span>
+              <!-- <span class="vs">VS</span>
+              <span class="team">{{awayteam}}</span> -->
+            </div>
+
+            <div class="date-time">
+              <p>Kick-Off : {{date}}</p>
+            </div>
+            <div class="date-time">
+              <p>Venue : {{venue}}</p>
+            </div>
+            <div style="bottom: 0; left: 0; right: 0" class="date-time">
+              <p style="font-style: italic">Ticket No :{{ticketNumber}}</p>
+            </div>
+          </div>
+
+          <!-- Right side of the ticket -->
+          <div class="ticket-right">
+            <div class="barcode"></div>
+          </div>
+        </div>
+      </div>
+      <div
+        id="download-section"
+        style="
+          display: none;
+          padding: 20px;
+          text-align: center;
+          font-family: sans-serif;
+        "
+      >
+        <img
+          id="qr-image"
+          src=""
+          alt="QR Code"
+          style="width: 200px; height: 200px; margin: 0 auto"
+        />
+        <div style="margin-top: 20px">
+          <p><strong id="match-name"></strong></p>
+          <p id="match-date"></p>
+          <p id="match-venue"></p>
+        </div>
+      </div>
+
+      <div class="note">
+        <p class="important-info">IMPORTANT INFORMATION:</p>
+        <ul>
+          <li>Please arrive at least 1 hour before match start time</li>
+          <li>Each ticket admits ONE person only</li>
+          <li>This ticket cannot be transferred or resold</li>
+          <li>Please have your ID ready for verification</li>
+          <li>No refunds or exchanges allowed</li>
+        </ul>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0">
+        <a href="javascript:void(0)" class="button" onclick="downloadTicket()"
+          >Download Ticket</a
+        >
+      </div>
+
+      <div class="note">
+        <p><strong>Stadium Entry Instructions:</strong></p>
+        <p>
+          1. Present this ticket (printed or on your mobile device) at the
+          stadium entrance
+        </p>
+        <p>2. Allow staff to scan the QR code</p>
+        <p>3. Follow the directions to your assigned seat</p>
+        <p>4. Enjoy the match!</p>
+      </div>
+
+      <div class="footer">
+        <div
+          style="
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            height: 60px;
+            background-image: url('https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png');
+          "
+        ></div>
+        <p>
+          If you have any questions about your ticket, please contact our
+          customer service team at:
+        </p>
+        <p>
+          <a href="mailto:tickets@mseal.com">tickets@m-seal.com</a> or call us
+          at <a href="tel:+254712345678">+254 (7123) 456-78</a>
+        </p>
+        <p>&copy; 2025 M-seal. All rights reserved.</p>
+        <p>Muranga Stadium, Muranga County, Kenya</p>
+      </div>
+    </div>
+
+    <script>
+      async function downloadTicket() {
+        const encryptedString = "ajkdhaiu32987179nasdo9389127473JSAUIR1YU";
+        const match = "Muranga Seal vs. Gor Mahia";
+        const date = "Saturday, May 10, 2025 • 15:00 EAT";
+        const venue = "Muranga Stadium";
+
+        // Generate QR Code image
+        const qrImage = await QRCode.toDataURL(encryptedString);
+
+        // Inject into DOM
+        document.getElementById("ticket-qr").src = qrImage;
+        document.getElementById("ticket-match").textContent = match;
+        document.getElementById("ticket-date").textContent = date;
+        document.getElementById("ticket-venue").textContent = venue;
+
+        const preview = document.getElementById("ticket-preview");
+        preview.style.display = "block";
+
+        // Use html2canvas to capture the section
+        html2canvas(preview).then((canvas) => {
+          const link = document.createElement("a");
+          link.download = `ticket-${match.replace(/\s+/g, "-")}.png`;
+          link.href = canvas.toDataURL();
+          link.click();
+          preview.style.display = "none";
+        });
+      }
+    </script>
+  </body>
+</html>

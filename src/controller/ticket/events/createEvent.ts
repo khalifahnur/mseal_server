@@ -43,6 +43,7 @@ const createEvent = async (req: AuthenticatedRequest, res: Response) => {
       venue,
       ticketPrice,
       totalTickets: availableTickets,
+      availableTickets,
     });
 
     const savedEvent = await newEvent.save();
