@@ -17,13 +17,14 @@ const getValidTickets = async (req: AuthenticatedRequest, res: Response) => {
       .lean();
 
     const minimalTicketData = tickets.map((ticket: any) => ({
-      _id: ticket._id,
+      id: ticket._id,
       event: {
         date: ticket.event?.date,
       },
     }));
 
     const qrcode = encryptedTicket(minimalTicketData);
+    
     res.status(200).json({
       message: "Valid tickets retrieved successfully",
       count: tickets.length,

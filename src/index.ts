@@ -10,7 +10,8 @@ import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 
 const passport = require("passport");
-const consumeEmailQueue = require("./lib/queue/order_email/consumer");
+const consumeOrderEmailQueue = require("./lib/queue/order_email/consumer");
+const consumeTicketEmailQueue = require("./lib/queue/ticket/consumer");
 require("./lib/passport-config");
 
 const userrouter = require("./router/user/userrouter");
@@ -94,8 +95,11 @@ app.use("/mseal/merchandise", merchandiserouter);
 app.use("/mseal/auth-admin", adminrouter);
 app.use("/mseal/staff-auth", staffrouter);
 
-consumeEmailQueue().catch(({ err }: any) => {
-  console.error("Failed to start email consumer:", err);
+consumeOrderEmailQueue().catch(({ err }: any) => {
+  console.error("Failed to start (order) email consumer:", err);
+});
+consumeTicketEmailQueue().catch(({ err }: any) => {
+  console.error("Failed to start (ticket) email consumer:", err);
 });
 
 app.use(
@@ -117,5 +121,3 @@ server
   .on("error", (err) => {
     console.error("Server error:", err);
   });
-
-

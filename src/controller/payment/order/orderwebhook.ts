@@ -83,7 +83,7 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
         order.paymentStatus = "Completed";
         order.updatedAt = new Date();
         await order.save({ session });
-        console.log(order);
+        // console.log(order);
 
         //await sendOrderConfirmation(order, customer.email,metadata);
         await publishToQueue("email_order_confirmation", {

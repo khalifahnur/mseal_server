@@ -1,10 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const Handlebars = require('handlebars');
+import Handlebars from 'handlebars';
 const Merchandise = require('../../../model/merchandise');
 
-require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -82,7 +81,7 @@ const sendOrderConfirmation = async (order: any, recipientEmail: string, metadat
     const htmlContent = htmlCompiled(templateData);
 
     const mailOptions = {
-      from: `"M-seal Team" <${process.env.GMAIL_USER}>`,
+      from: '"M-seal Team" <no-reply@yourdomain.com>',
       to: recipientEmail,
       subject: `Your M-seal order confirmed #-${order.orderId}`,
       html: htmlContent,
