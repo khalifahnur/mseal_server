@@ -5,10 +5,10 @@ const sendOrderConfirmation = require("../../../service/user/email/sendOrder");
 
 dotenv.config();
 
-// const rabbitMQUrl =
-//   process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
 const rabbitMQUrl =
-   "amqp://guest:guest@localhost:5672";
+  process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
+// const rabbitMQUrl =
+//    "amqp://guest:guest@localhost:5672";
 const queue = "email_order_confirmation";
 
 interface QueueMessage {
