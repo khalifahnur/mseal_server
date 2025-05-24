@@ -31,4 +31,5 @@ function encryptQr(data:any) {
 
   return Buffer.from(JSON.stringify(payload)).toString('base64');
 }
+
 module.exports = encryptQr;
