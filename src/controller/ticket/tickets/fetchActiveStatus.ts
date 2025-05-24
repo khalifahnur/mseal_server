@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 const Ticket = require("../../../model/ticket");
-const encryptedTicket = require("../../../lib/encryptedQr");
+const encryptQr = require("../../../lib/encryptedQr");
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -16,20 +16,26 @@ const getValidTickets = async (req: AuthenticatedRequest, res: Response) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    const minimalTicketData = tickets.map((ticket: any) => ({
-      id: ticket._id,
-      event: {
-        date: ticket.event?.date,
-      },
-    }));
+    const minimalTicketData = tickets
+      .map((ticket: any) => ({
+        id: ticket._id.toString(),
+        event: {
+          date: ticket.event[0].date? new Date(ticket.event[0].date).toISOString() : null,
+          // match: ticket.event[0]?.match || null,
+          // venue: ticket.event[0]?.venue || null,
+        },
+      }));
 
-    const qrcode = encryptedTicket(minimalTicketData);
+    const qrCodes = minimalTicketData.map((ticket:any) => {
+      const qrCode = encryptQr([ticket]);
+      return qrCode;
+    });
     
     res.status(200).json({
       message: "Valid tickets retrieved successfully",
       count: tickets.length,
       tickets,
-      qrcode,
+      qrcode:qrCodes,
     });
   } catch (error: any) {
     res.status(500).json({
