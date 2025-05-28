@@ -7,7 +7,7 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: false },
   phoneNumber: { type: String, required: false, unique:true },
-  membershipId: { type: String, default:null},
+  membershipId: { type: Schema.Types.ObjectId, ref: 'Membership', default: null},
   createdAt: { type: Date, default: Date.now },
   verificationCode: { type: String },
   verificationCodeExpiration: { type: Date },
