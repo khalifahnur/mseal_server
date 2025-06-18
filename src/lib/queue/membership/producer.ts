@@ -5,9 +5,16 @@ const rabbitMQUrl =
    "amqp://guest:guest@localhost:5672";
 
 interface QueueMessage {
-  ticketId: string;
-  recipientEmail: string;
-  metadata?: any;
+  firstName: string;
+  email: string;
+  membershipTier: string;
+  purchaseDate: string;
+  transcationId: string;
+  billingPeriod: string;
+  paymentMethod: string;
+  amount: string;
+  nextBillingDate: string;
+  recurringAmount: string;
 }
 
 const publishToTicketQueue = async (queueName: string, data: QueueMessage) => {

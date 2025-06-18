@@ -1,20 +1,27 @@
 import amqp, { Channel } from "amqplib";
 import dotenv from "dotenv";
-const Order = require("../../../model/order");
-const sendOrderConfirmation = require("../../../service/user/email/sendOrder");
+const sendMembershipConfrimation = require("../../../service/user/email/sendMembership")
 
 dotenv.config();
 
-//const rabbitMQUrl =
-  //process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
+// const rabbitMQUrl =
+//   process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
 const rabbitMQUrl =
    "amqp://guest:guest@localhost:5672";
-const queue = "email_order_confirmation";
+const queue = "email_membership_confirmation";
+
 
 interface QueueMessage {
-  orderId: string;
+  firstName: string;
   email: string;
-  metadata?: any;
+  membershipTier: string;
+  purchaseDate: string;
+  transcationId: string;
+  billingPeriod: string;
+  paymentMethod: string;
+  amount: string;
+  nextBillingDate: string;
+  recurringAmount: string;
 }
 
 const consumeEmailQueue = async () => {
@@ -27,10 +34,9 @@ const consumeEmailQueue = async () => {
       channel = await connection.createChannel();
       await channel.assertQueue(queue, { durable: true });
 
-      // Handle connection errors
       connection.on("error", (err) => {
         console.error("RabbitMQ connection error:", err);
-        setTimeout(connect, 5000); // Reconnect after 5 seconds
+        setTimeout(connect, 5000);
       });
 
       connection.on("close", () => {
@@ -45,30 +51,25 @@ const consumeEmailQueue = async () => {
 
           try {
             const data: QueueMessage = JSON.parse(msg.content.toString());
-            if (!data.orderId || !data.email) {
+            if (!data) {
               throw new Error("Invalid message format");
             }
 
-            const order = await Order.findById(data.orderId);
-            if (!order) {
-              console.warn(`Order not found: ${data.orderId}`);
-              channel.ack(msg);
-              return;
-            }
-
-            await sendOrderConfirmation(order, data.email, data.metadata);
+            await sendMembershipConfrimation(
+              data
+            );
             channel.ack(msg);
           } catch (err) {
-            console.error("Email consumer error(order):", err);
+            console.error("Email consumer error (ticket):", err);
             channel.nack(msg, false, false);
           }
         },
         { noAck: false }
       );
 
-      console.log("Email consumer started (order)...");
+      console.log("Email consumer started (ticket)...");
     } catch (err) {
-      console.error("Failed to start consumer:", err);
+      console.error("Failed to start consumer(ticket):", err);
       setTimeout(connect, 5000);
     }
   };
