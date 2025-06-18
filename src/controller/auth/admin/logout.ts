@@ -27,14 +27,13 @@ const LogoutAdmin = async (req: AuthenticatedRequest, res: Response) => {
     // Clear the cookie
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // set to true in production
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      path: "/", // ensure the path matches where the cookie was set
+      path: "/",
     });
 
     return res.status(200).json({ message: "Logged out successfully" });
   } catch (error: any) {
-    // Optional: only really needed if you’re relying on the verification step
     if (error.name === "TokenExpiredError") {
       return res.status(401).json({ message: "Token has expired" });
     }

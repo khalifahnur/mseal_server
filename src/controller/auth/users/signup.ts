@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { hashPassword } from "../../../lib/hashPassword";
+import { format } from "date-fns";
 
 const User = require("../../../model/user");
+const publishToSignUpQueue = require("../../../lib/queue/auth/signup/producer");
 
 const signUpUser = async (req: Request, res: Response) => {
   try {
@@ -37,6 +39,16 @@ const signUpUser = async (req: Request, res: Response) => {
     });
 
     await newUser.save();
+    try {
+      const registrationDate = format(new Date(), "yyyy-MM-dd");
+      await publishToSignUpQueue("email_signup", {
+        firstName,
+        registrationDate,
+        email,
+      });
+    } catch (queueError) {
+      console.error("Failed to publish to sign-in queue:", queueError);
+    }
     res.status(200).json({ message: "User created successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error creating user" });
