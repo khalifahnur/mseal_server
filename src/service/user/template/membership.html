@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membership Purchase Confirmation - MSeal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            background-color: #e8e8e8;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 10px solid #000;
+            background-color: #fae115;
+        }
+        .logo {
+            max-height: 60px;
+            width: auto;
+        }
+        .confirmation-message {
+            padding: 30px 0;
+            text-align: center;
+        }
+        .confirmation-message h1 {
+            color: #333333;
+            font-size: 32px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .tier-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .tier-basic { background-color: #e8f5e8; color: #2e7d2e; }
+        .tier-premium { background-color: #fff3cd; color: #856404; }
+        .tier-enterprise { background-color: #d1ecf1; color: #0c5460; }
+        .tier-pro { background-color: #f8d7da; color: #721c24; }
+        
+        .membership-details {
+            background-color: #f8f8f8;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        .membership-details h2 {
+            color: #333333;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 18px;
+            color: #4CAF50;
+        }
+        .benefits-section {
+            margin: 25px 0;
+        }
+        .benefits-section h2 {
+            color: #333333;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+        }
+        .benefit-icon {
+            width: 25px;
+            height: 25px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .benefit-icon::after {
+            content: "✓";
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .benefit-content {
+            flex: 1;
+        }
+        .benefit-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .benefit-description {
+            font-size: 14px;
+            color: #666;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .button.secondary {
+            background-color: #333333;
+        }
+        .button:hover {
+            opacity: 0.9;
+        }
+        .cta-section {
+            text-align: center;
+            padding: 30px 0;
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #3d3c38;
+            background-color: #fae115;
+            border-top: 3px solid #000;
+            width: 100%;
+            max-width: 944px;
+        }
+        .billing-info {
+            background-color: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .billing-info h3 {
+            color: #333333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .next-billing {
+            background-color: #e8f5e8;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .confirmation-message h1 {
+                font-size: 28px;
+            }
+            .detail-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .benefit-item {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png" alt="MSeal Logo" class="logo" />
+            <h2 style="font-size:42px;font-weight:600;font-style:normal;font-stretch:normal;line-height:normal;letter-spacing:normal;text-align:center;color:#000000;margin:25px 0">MSeal Membership</h2>
+        </div>
+        
+        <div class="confirmation-message">
+            <h1>Welcome to {{membershipTier}}</h1>
+            <div class="tier-badge tier-{{membershipTierLower}}">{{membershipTier}} Member</div>
+            <p>Congratulations, {{firstName}}! Your membership purchase was successful.</p>
+            <p>Your {{membershipTier}} membership is now active and ready to use.</p>
+        </div>
+
+        <div class="membership-details">
+            <h2>Purchase Summary</h2>
+            <div class="detail-row">
+                <span>Membership Plan:</span>
+                <span>{{membershipTier}}</span>
+            </div>
+            <div class="detail-row">
+                <span>Purchase Date:</span>
+                <span>{{purchaseDate}}</span>
+            </div>
+            <div class="detail-row">
+                <span>Transaction ID:</span>
+                <span>#{{transactionId}}</span>
+            </div>
+            <div class="detail-row">
+                <span>Billing Period:</span>
+                <span>{{billingPeriod}}</span>
+            </div>
+            <div class="detail-row">
+                <span>Payment Method:</span>
+                <span>{{paymentMethod}}</span>
+            </div>
+            <div class="detail-row">
+                <span>Amount Paid:</span>
+                <span>Ksh.{{amount}}</span>
+            </div>
+        </div>
+
+        <img src="https://ci3.googleusercontent.com/meips/ADKq_NYcaTCXJASTcXc2daG_goKcFYL19p-0ygK2gaP6d9b_-R7oTHbdah9Nc7qpt6-RQlEJRSTkOzhEDlIa3EcVbVh-FY34SoLl1cWDxXh-eDfNAdLe7YTBWS5GM0GDX30=s0-d-e1-ft#https://s3-eu-west-1.amazonaws.com/glovo-emails/static/dist/img/wave.png" alt="separator" style="width:100%;object-fit:cover">
+
+        <div class="next-billing">
+            <h3>📅 Next Billing Information</h3>
+            <p><strong>Next Billing Date:</strong> {{nextBillingDate}}</p>
+            <p><strong>Amount:</strong> Ksh.{{recurringAmount}}</p>
+            <p>Your membership will automatically renew unless cancelled before the next billing date.</p>
+        </div>
+
+        <img src="https://ci3.googleusercontent.com/meips/ADKq_NYcaTCXJASTcXc2daG_goKcFYL19p-0ygK2gaP6d9b_-R7oTHbdah9Nc7qpt6-RQlEJRSTkOzhEDlIa3EcVbVh-FY34SoLl1cWDxXh-eDfNAdLe7YTBWS5GM0GDX30=s0-d-e1-ft#https://s3-eu-west-1.amazonaws.com/glovo-emails/static/dist/img/wave.png" alt="separator" style="width:100%;object-fit:cover">
+
+        <div style="background-color: #f8f8f8; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3>Important Notes:</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+                <li>Your membership benefits are active immediately</li>
+                <li>You can manage your subscription in your account settings</li>
+                <li>Receipts and invoices are available in your billing section</li>
+                <li>Contact support if you need help getting started</li>
+                <li>You can cancel your subscription anytime before the next billing cycle</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <p>Have questions about your membership?</p>
+            <a href="{{faqUrl}}" style="color: #4CAF50; text-decoration: none;">View FAQ</a> |
+            <a href="{{manageSubscriptionUrl}}" style="color: #4CAF50; text-decoration: none;">Manage Subscription</a> |
+            <a href="{{downloadReceiptUrl}}" style="color: #4CAF50; text-decoration: none;">Download Receipt</a>
+        </div>
+        
+        <div class="footer">
+            <div style="width:100%;background-size:cover;background-position:center;height:60px;background-image:url('https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png')"></div>
+            <p>Thank you for choosing MSeal Membership! We're excited to have you on board.</p>
+            <p>Need help? Contact us at <a href="mailto:support@mseal.com">support@mseal.com</a> or call <a href="tel:+254712345678">+254 (7123) 456-78</a></p>
+            <p>&copy; 2025 MSeal. All rights reserved.</p>
+            <p>Muranga Stadium, Muranga County, Kenya</p>
+        </div>
+    </div>
+</body>
+</html>
