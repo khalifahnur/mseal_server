@@ -8,10 +8,16 @@ import http from "http";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import morgan from "morgan";
+import session from "express-session";
+import { Server } from "socket.io";
+import setupWebSocket from "./socket/orderConfirmPayment";
 
 const passport = require("passport");
 const consumeOrderEmailQueue = require("./lib/queue/order_email/consumer");
 const consumeTicketEmailQueue = require("./lib/queue/ticket/consumer");
+const consumerSignInEmailQueue = require("./lib/queue/auth/signin/consumer");
+const consumerSignUpEmailQueue = require("./lib/queue/auth/signup/consumer");
+
 require("./lib/passport-config");
 
 const userrouter = require("./router/user/userrouter");
@@ -44,13 +50,22 @@ const corsOptions = {
   exposedHeaders: ["Set-Cookie"],
 };
 
+const io = new Server(server, {
+  cors: {
+    origin: ["https://mseal-membership.vercel.app", "http://localhost:3000",],
+    methods: ["GET", "POST"],
+    credentials:true,
+  },
+});
+
 app.use(cors(corsOptions));
 app.use(helmet());
 app.use(morgan("combined"));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true, limit: "5mb" }));
 app.use(bodyParser.json({ limit: "1mb" }));
-import session from "express-session";
+//app.set('trust proxy', true);
+
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -101,6 +116,14 @@ consumeOrderEmailQueue().catch(({ err }: any) => {
 consumeTicketEmailQueue().catch(({ err }: any) => {
   console.error("Failed to start (ticket) email consumer:", err);
 });
+consumerSignInEmailQueue().catch(({ err }: any) => {
+  console.error("Failed to start (signin) email consumer:", err);
+});
+consumerSignUpEmailQueue().catch(({ err }: any) => {
+  console.error("Failed to start (signup) email consumer:", err);
+});
+
+setupWebSocket(io)
 
 app.use(
   (
