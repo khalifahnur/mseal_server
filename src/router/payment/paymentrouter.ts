@@ -15,6 +15,9 @@ const orderwebhook = require("../../controller/payment/order/orderwebhook");
 const initiatePesapalMembershipPayment = require("../../controller/payment/membership/pesapal/initiatepayment");
 const pesapalMembershipPaymentCallback = require("../../controller/payment/membership/pesapal/callback");
 
+const intitateMsealWalletOrderPayment = require("../../controller/payment/order/msealWallet/initiateorderpayment");
+const initiateMsealWalletTicketPayment = require("../../controller/payment/ticket/msealWallet/initiateticketpayment");
+
 router.post("/initiate-payment", authenticateUser, initiateMembershipPayment);
 router.post("/membership-web-hook", handleWebhook);
 router.get("/payment-status", checkPaymentStatus);
@@ -43,5 +46,9 @@ router.post(
 );
 
 router.post("/pesapal/initiate-membership-callback",pesapalMembershipPaymentCallback);
+
+//mseal-wallet
+router.post("/mseal-wallet/initiate-order-payment",authenticateUser,intitateMsealWalletOrderPayment);
+router.post("/mseal-wallet/initiate-ticket-payment",authenticateUser,initiateMsealWalletTicketPayment)
 
 module.exports = router;
