@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 
 const Order = require("../../../model/order");
 const Merchandise = require("../../../model/merchandise");
-const sendOrderConfirmation = require("../../../service/user/email/sendOrder");
+const Transaction = require("../../../model/transaction");
 const publishToQueue = require("../../../lib/queue/order_email/producer");
 
 dotenv.config();
@@ -35,10 +35,10 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
     const existingOrder = await Order.findOne({
       transactionReference: reference,
     });
-    
+
     if (existingOrder?.paymentStatus === "Completed") {
       return res.status(200).json({ message: "Transaction already processed" });
-    }    
+    }
 
     const session = await mongoose.startSession();
     try {
@@ -79,13 +79,22 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
           await product.save({ session });
         }
 
+        const transaction = new Transaction({
+          userId: metadata.userId,
+          transactionType: "merchandise",
+          amount: amount,
+          status: "Success",
+          paymentMethod: "Mpesa",
+          reference,
+        });
+        await transaction.save({ session });
+
         order.status = "Processing";
         order.paymentStatus = "Completed";
         order.updatedAt = new Date();
         await order.save({ session });
         // console.log(order);
-
-        //await sendOrderConfirmation(order, customer.email,metadata);
+        
         await publishToQueue("email_order_confirmation", {
           orderId: order._id,
           email: customer.email,

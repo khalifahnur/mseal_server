@@ -15,6 +15,7 @@ const walletSchema = new Schema({
     enum: ['Pending', 'Completed', 'Failed'],
     default: 'Pending',
   },
+  prepaidReference:{types:String,unique:true,default:""}
 },
 { timestamps: true }
 );

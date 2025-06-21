@@ -6,14 +6,12 @@ import axios from "axios";
 
 dotenv.config();
 
-const Ticket = require("../../../model/ticket");
+const Wallet = require("../../../model/wallet");
 const Transaction = require("../../../model/transaction");
-const Event = require("../../../model/event");
-const publishToTicketQueue = require("../../../lib/queue/ticket/producer");
 
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
 
-const handlePaystackWebhook = async (req: Request, res: Response) => {
+const handleWalletPaystackWebhook = async (req: Request, res: Response) => {
   const hash = crypto
     .createHmac("sha512", PAYSTACK_SECRET)
     .update(JSON.stringify(req.body))
@@ -30,10 +28,10 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
     event.event === "charge.success" &&
     event.data.channel === "mobile_money"
   ) {
-    const { reference, amount, metadata, customer } = event.data;
+    const { reference, amount, metadata } = event.data;
 
-    const existingTicket = await Ticket.findOne({
-      paymentReference: reference,
+    const existingTicket = await Wallet.findOne({
+      prepaidReference: reference,
     });
 
     if (existingTicket?.paymentStatus === "Completed") {
@@ -56,47 +54,26 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
           throw new Error("Transaction verification failed");
         }
 
-        const tickets = await Ticket.findOne(
-          { paymentReference: reference },
-          null,
-          { session }
-        );
-        if (!tickets) {
-          throw new Error("Ticket not found");
-        }
-
-        // if (tickets.totalAmount * 100 !== amount) {
-        //   throw new Error("Amount mismatch");
-        // }
-
-        const event = await Event.findById(metadata.eventId, null, {
+        const wallet = await Wallet.findOne({ userId: metadata.userId }, null, {
           session,
         });
-        if (!event || event.availableTickets < metadata.quantity) {
-          throw new Error(`Insufficient ticket ${metadata.productId}`);
+        if (!wallet) {
+          throw new Error("Wallet not found");
         }
-        event.availableTickets -= metadata.quantity;
-        await event.save({ session });
 
-        (tickets.status = "valid"), (tickets.paymentStatus = "Completed");
-
-        await tickets.save({ session });
+        wallet.paymentStatus = "Completed";
+        wallet.prepaidReference = "";
+        await wallet.save({ session });
 
         const transaction = new Transaction({
           userId: metadata.userId,
-          transactionType: "ticket",
+          transactionType: "prepaid",
           amount: amount,
           status: "Success",
           paymentMethod: "Mpesa",
           reference,
         });
         await transaction.save({ session });
-
-        await publishToTicketQueue("email_ticket_confirmation", {
-          ticketId: tickets._id,
-          recipientEmail: customer.email,
-          metadata,
-        });
       });
 
       res.status(200).send("Webhook processed successfully");
@@ -109,4 +86,4 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
   }
 };
 
-module.exports = handlePaystackWebhook;
+module.exports = handleWalletPaystackWebhook;

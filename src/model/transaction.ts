@@ -5,7 +5,7 @@ const transactionSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User" },
   transactionType: {
     type: String,
-    enum: ["membership", "ticket", "merchandise"],
+    enum: ["membership", "ticket", "merchandise","prepaid"],
   },
   amount: { type: Number, require: true },
   status: { type: String, enum: ["Success", "Failed"] },
