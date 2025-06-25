@@ -6,8 +6,8 @@ dotenv.config();
 
 
 const getPesapalToken = async () => {
-  console.log("Using PESAPAL_CONSUMER_KEY:", process.env.PESAPAL_CONSUMER_KEY);
-  console.log("Using PESAPAL_CONSUMER_SECRET:", process.env.PESAPAL_CONSUMER_SECRET);
+  // console.log("Using PESAPAL_CONSUMER_KEY:", process.env.PESAPAL_CONSUMER_KEY);
+  // console.log("Using PESAPAL_CONSUMER_SECRET:", process.env.PESAPAL_CONSUMER_SECRET);
 
   try {
     const response = await axios.post(
