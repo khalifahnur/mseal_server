@@ -8,14 +8,14 @@ const walletSchema = new Schema({
   status: {
     type: String,
     enum: ["Active", "Inactive", "Suspended", "Pending"],
-    default: "Inative",
+    default: "Inactive",
   },
   paymentStatus: {
     type: String,
     enum: ['Pending', 'Completed', 'Failed'],
     default: 'Pending',
   },
-  prepaidReference:{types:String,unique:true,default:""}
+  prepaidReference:{type:String,unique:true,default:""}
 },
 { timestamps: true }
 );

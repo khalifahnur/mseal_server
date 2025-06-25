@@ -7,10 +7,10 @@ const transactionSchema = new Schema({
     type: String,
     enum: ["membership", "ticket", "merchandise","prepaid"],
   },
-  amount: { type: Number, require: true },
+  amount: { type: Number, required: true },
   status: { type: String, enum: ["Success", "Failed"] },
   paymentMethod: { type: String, enum: ["Mpesa", "Visa", "Mseal-wallet"] },
-  reference: { string: String, required: true, unique: true },
+  reference: { type: String, required: true, unique: true },
   createdAt: { type: Date, default: Date.now },
 });
 

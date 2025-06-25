@@ -11,6 +11,9 @@ import morgan from "morgan";
 import session from "express-session";
 import { Server } from "socket.io";
 import setupWebSocket from "./socket/orderConfirmPayment";
+import setupMembershipWebSocket from "./socket/membershipConfirmPayment";
+import setupWalletWebSocket from "./socket/walletConfirmPayment";
+import setupTicketWebSocket from "./socket/ticketConfirmPayment";
 
 const passport = require("passport");
 const consumeOrderEmailQueue = require("./lib/queue/order_email/consumer");
@@ -28,6 +31,7 @@ const ticketrouter = require("./router/ticket/ticketrouter");
 const merchandiserouter = require("./router/merchandise/merchandise");
 const adminrouter = require("./router/admin/adminrouter");
 const staffrouter = require("./router/staff/staffrouter");
+const transactionrouter = require("./router/transaction/transactionrouter");
 
 dotenv.config();
 
@@ -109,6 +113,7 @@ app.use("/mseal/ticket", ticketrouter);
 app.use("/mseal/merchandise", merchandiserouter);
 app.use("/mseal/auth-admin", adminrouter);
 app.use("/mseal/staff-auth", staffrouter);
+app.use("/mseal/transaction", transactionrouter);
 
 consumeOrderEmailQueue().catch(({ err }: any) => {
   console.error("Failed to start (order) email consumer:", err);
@@ -124,6 +129,9 @@ consumerSignUpEmailQueue().catch(({ err }: any) => {
 });
 
 setupWebSocket(io)
+setupMembershipWebSocket(io)
+setupWalletWebSocket(io)
+setupTicketWebSocket(io)
 
 app.use(
   (
