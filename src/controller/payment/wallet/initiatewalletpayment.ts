@@ -74,10 +74,9 @@ const initiatewalletpayment = async (
       }
     );
 
-    await new Wallet({
-      paymentStatus: "Pending",
-      prepaidReference: response.data.data.reference,
-    }).save();
+    wallet.paymentStatus = "Pending";
+    wallet.prepaidReference = response.data.data.reference;
+    await wallet.save();
 
     res.json({
       message: "STK push initiated",

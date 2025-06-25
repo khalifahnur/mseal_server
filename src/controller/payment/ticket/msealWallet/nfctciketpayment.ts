@@ -9,20 +9,18 @@ const generateTicketId = require("../../../../lib/generateTicketId");
 const Event = require("../../../../model/event");
 const publishToTicketQueue = require("../../../../lib/queue/ticket/producer");
 const User = require("../../../../model/user");
+const decryptWallet = require("../../../../lib/decryptWallet");
 
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-  };
-}
-
-const handleMsealWalletTicket = async (
-  req: AuthenticatedRequest,
-  res: Response
-) => {
+const handleNfcTicketPayment = async (req: Request, res: Response) => {
   const { eventId, match, date, venue, quantity, amount } = req.body;
   const totalAmount = amount * quantity;
-  const userId = req.user?.id;
+
+  // Decrypt userId from request params
+  const userId = decryptWallet(req.params.encryptedUserId);
+  if (!mongoose.isValidObjectId(userId)) {
+    res.status(400).json({ error: "Invalid user ID" });
+    return;
+  }
 
   if (
     !userId ||
@@ -142,4 +140,4 @@ const handleMsealWalletTicket = async (
   }
 };
 
-module.exports = handleMsealWalletTicket;
+module.exports = handleNfcTicketPayment;

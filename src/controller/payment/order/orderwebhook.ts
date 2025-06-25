@@ -82,7 +82,7 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
         const transaction = new Transaction({
           userId: metadata.userId,
           transactionType: "merchandise",
-          amount: amount,
+          amount: amount/100,
           status: "Success",
           paymentMethod: "Mpesa",
           reference,

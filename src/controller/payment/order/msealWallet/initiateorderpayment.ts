@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 
-const Order = require("../../../model/order");
-const Merchandise = require("../../../model/merchandise");
-const publishToQueue = require("../../../lib/queue/order_email/producer");
+const Order = require("../../../../model/order");
+const Merchandise = require("../../../../model/merchandise");
+const publishToQueue = require("../../../../lib/queue/order_email/producer");
 const Wallet = require("../../../../model/wallet");
 const Transaction = require("../../../../model/transaction");
 const generateReference = require("../../../../lib/generateReference");
@@ -46,13 +46,17 @@ const handleMsealWalletOrder = async (
       ]);
 
       if (!user) {
+        //res.status(400).json({message:"User not found"})
         throw new Error("User not found");
       }
       if (!wallet) {
+        //res.status(400).json({message:"Inactive wallet or wallet not found"})
         throw new Error("Active wallet not found");
       }
       if (wallet.balance < totalAmount) {
+        //res.status(400).json({message:"Insufficient funds"})
         throw new Error("Insufficient funds");
+        
       }
 
       const reference = generateReference(userId);

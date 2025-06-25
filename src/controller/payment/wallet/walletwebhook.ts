@@ -62,13 +62,13 @@ const handleWalletPaystackWebhook = async (req: Request, res: Response) => {
         }
 
         wallet.paymentStatus = "Completed";
-        wallet.prepaidReference = "";
+        wallet.balance += amount/100;
         await wallet.save({ session });
 
         const transaction = new Transaction({
           userId: metadata.userId,
           transactionType: "prepaid",
-          amount: amount,
+          amount: amount/100,
           status: "Success",
           paymentMethod: "Mpesa",
           reference,
