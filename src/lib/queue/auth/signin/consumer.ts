@@ -5,10 +5,10 @@ const sendSIgnIn = require("../../../../service/user/email/sendSignIn")
 
 dotenv.config();
 
-// const rabbitMQUrl =
-//   process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
 const rabbitMQUrl =
-   "amqp://guest:guest@localhost:5672";
+  process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
+// const rabbitMQUrl =
+//    "amqp://guest:guest@localhost:5672";
 const queue = "sign_in_detected";
 
 

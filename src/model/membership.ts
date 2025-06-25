@@ -13,10 +13,14 @@ const membershipSchema = new Schema({
   status: {
     type: String,
     required: true,
-    enum: ["valid", "denied"],
-    default: "valid",
+    enum: ["Active", "Inactive","Pending"],
+    default: "Inactive",
   },
-  paymentStatus: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
+    paymentStatus: {
+    type: String,
+    enum: ['Pending', 'Completed', 'Failed'],
+    default: 'Pending',
+  },
   dob: { type: String, required: true },
   physicalAddress: { type: String, required: true },
   city: { type: String, required: true },
