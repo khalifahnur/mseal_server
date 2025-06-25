@@ -8,6 +8,7 @@ const userSchema = new Schema({
   password: { type: String, required: false },
   phoneNumber: { type: String, required: false, unique:true },
   membershipId: { type: Schema.Types.ObjectId, ref: 'Membership', default: null},
+  walletId: { type: Schema.Types.ObjectId, ref: 'Wallet', default: null},
   createdAt: { type: Date, default: Date.now },
   verificationCode: { type: String },
   verificationCodeExpiration: { type: Date },

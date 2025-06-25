@@ -9,6 +9,8 @@ interface AuthenticatedRequest extends Request {
 }
 
 const encryptQr = require("../../../lib/encryptedQr");
+const encryptWallet = require("../../../lib/encryptWallet");
+const Wallet = require("../../../model/wallet");
 
 const getMemberInfo = async (req: AuthenticatedRequest, res: Response) => {
   const adminId = req.adminId?.id;
@@ -28,22 +30,29 @@ const getMemberInfo = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(404).json({ error: "No users found" });
     }
 
-    const responseData = users.map((user:any) => ({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      membershipTier: user.membershipId?.membershipTier || null,
-      membershipId: user.membershipId?._id || null,
-      balance: user.membershipId?.amount || 0,
-      createdAt: user.membershipId?.createdAt || null,
-      expDate: user.membershipId?.expDate || null,
-      qrcode: user.membershipId
-        ? encryptQr(user.membershipId._id.toString())
-        : null,
-      physicalIdIssued: user.physicalIdIssued,
-      lockRequested: user.lockRequested,
-    }));
+    const responseData = await Promise.all(
+      users.map(async (user: any) => {
+        const walletInfo = await Wallet.findOne({ userId: user._id }).lean();
+
+        return {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          membershipTier: user.membershipId?.membershipTier || null,
+          membershipId: user.membershipId?._id || null,
+          createdAt: user.membershipId?.createdAt || null,
+          expDate: user.membershipId?.expDate || null,
+          qrcode: user.membershipId
+            ? encryptQr(user.membershipId._id.toString())
+            : null,
+          ecryptWalletId: user._id ? encryptWallet(user._id.toString()) : null,
+          cardNumber: walletInfo?._id || null,
+          physicalIdIssued: user.physicalIdIssued,
+          lockRequested: user.lockRequested,
+        };
+      })
+    );
 
     return res.status(200).json(responseData);
   } catch (error) {

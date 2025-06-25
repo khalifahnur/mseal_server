@@ -1,11 +1,13 @@
+import { Request, Response } from "express";
 import axios from "axios";
-import { Response, Request } from "express";
 import dotenv from "dotenv";
+
+const User = require("../../../model/user");
+const Wallet = require("../../../model/wallet");
 
 dotenv.config();
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
-const Membership = require("../../../model/membership");
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -13,16 +15,11 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
-const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
-  const {
-    phoneNumber,
-    amount,
-    email,
-    membershipTier,
-    dob,
-    physicalAddress,
-    city,
-  } = req.body;
+const initiatewalletpayment = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  const { amount, phoneNumber } = req.body;
   const userId = req.user?.id;
 
   if (!PAYSTACK_SECRET_KEY) {
@@ -34,6 +31,25 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
   }
 
   try {
+    const userObj = await User.findById(userId);
+    const wallet = await Wallet.findOne({ userId });
+
+    if (!userObj) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const { email, firstName, lastName } = userObj;
+
+    if (!email) {
+      return res.status(400).json({ error: "User email is required" });
+    }
+    if (!phoneNumber) {
+      return res.status(400).json({ error: "User phone number is required" });
+    }
+    if (!wallet) {
+      return res.status(400).json({ error: "wallet not found" });
+    }
+
     const response = await axios.post(
       "https://api.paystack.co/charge",
       {
@@ -46,10 +62,8 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
         },
         metadata: {
           userId,
-          membershipTier,
-          dob,
-          physicalAddress,
-          city,
+          firstName,
+          lastName,
         },
       },
       {
@@ -60,18 +74,9 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
       }
     );
 
-    const membership = new Membership({
-      userId,
-      membershipTier,
-      dob: dob || null,
-      physicalAddress,
-      city,
-      amount,
-      reference: response.data.data.reference,
-      paymentStatus: "Pending",
-      status: "Pending",
-    });
-    await membership.save();
+    wallet.paymentStatus = "Pending";
+    wallet.prepaidReference = response.data.data.reference;
+    await wallet.save();
 
     res.json({
       message: "STK push initiated",
@@ -83,13 +88,11 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
       "Error initiating payment:",
       error.response?.data || error.message
     );
-    res
-      .status(500)
-      .json({
-        error: "Failed to initiate payment",
-        details: error.response?.data || error.message,
-      });
+    res.status(500).json({
+      error: "Failed to initiate payment",
+      details: error.response?.data || error.message,
+    });
   }
 };
 
-module.exports = initiatePayment;
+module.exports = initiatewalletpayment;
