@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 
-const User = require('../../../model/user');
-const Membership = require('../../../model/membership');
+const User = require("../../../model/user");
+const Membership = require("../../../model/membership");
+const Wallet = require("../../../model/wallet");
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -31,6 +32,8 @@ const getUserInfo = async (req: AuthenticatedRequest, res: Response) => {
       qrcode = encryptQr(userInfo.membershipId);
     }
 
+    const walletInfo = await Wallet.findOne({ userId }).lean();
+
     const responseData = {
       firstName: userInfo.firstName,
       lastName: userInfo.lastName,
@@ -38,10 +41,11 @@ const getUserInfo = async (req: AuthenticatedRequest, res: Response) => {
       phoneNumber: userInfo.phoneNumber,
       membershipTier: membershipInfo?.membershipTier || null,
       membershipId: userInfo.membershipId || null,
-      balance: membershipInfo?.amount || 0,
       createdAt: membershipInfo?.createdAt || null,
       expDate: membershipInfo?.expDate || null,
       qrcode,
+      balance: walletInfo?.balance || 0,
+      walletId: walletInfo._id || null,
     };
 
     return res.status(200).json(responseData);
