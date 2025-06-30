@@ -2,9 +2,9 @@ import Redis from "ioredis";
 import generateSecretKey from "./generateSecretKey";
 
 const redis = new Redis();
-const SECRET_KEY_REDIS_KEY = "jwt_secret_key";
 
-const getSecretKey = async () => {
+const getSecretKey = async (userId:string) => {
+  const SECRET_KEY_REDIS_KEY = `user:${userId}:jwt_secret`;
   let secretKey = await redis.get(SECRET_KEY_REDIS_KEY);
 
   if (!secretKey) {

@@ -3,19 +3,32 @@ import jwt from "jsonwebtoken";
 import getSecretKey from "../lib/getSecretKey";
 
 // Authentication middleware
-const authenticateAdmin = async (req: Request, res: Response, next: NextFunction) => {
+const authenticateAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const token = req.cookies.admin_auth;
 
   if (!token) {
-    return res.status(401).json({ message: "Access token is required" });
+    return res.status(401).json({ message: "Authentication required" });
   }
 
   try {
-    const secretKey = await getSecretKey();
-    const decoded = jwt.verify(token, secretKey) as jwt.JwtPayload;
-    req.adminId = { id: decoded.adminId };
+    const decoded = jwt.decode(token) as jwt.JwtPayload;
+    if (!decoded?.adminId) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    const secretKey = await getSecretKey(decoded?.adminId);
+    const verified = jwt.verify(token, secretKey) as jwt.JwtPayload;
+    req.adminId = { id: verified.adminId };
     next();
   } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      return res.status(401).json({ message: "Token expired" });
+    }
+    res.status(401).json({ message: "Invalid token" });
     res.status(401).json({ message: "Invalid or expired token" });
   }
 };

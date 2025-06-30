@@ -22,7 +22,7 @@ const loginStaff = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Incorrect Email/Password" });
     }
 
-    const secretKey = await getSecretKey();
+    const secretKey = await getSecretKey(staff._id);
     const token = jwt.sign({ staffId: staff._id }, secretKey, {
       expiresIn: "24h",
     });
