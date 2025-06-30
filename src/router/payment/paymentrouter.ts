@@ -19,6 +19,7 @@ const intitateMsealWalletOrderPayment = require("../../controller/payment/order/
 const initiateMsealWalletTicketPayment = require("../../controller/payment/ticket/msealWallet/initiateticketpayment");
 const initiateWalletTopup = require("../../controller/payment/wallet/initiatewalletpayment");
 const walletWebhook = require("../../controller/payment/wallet/walletwebhook");
+const initiateNfcPayment = require("../../controller/payment/ticket/msealWallet/nfctciketpayment");
 
 router.post(
   "/initiate-membership-payment",
@@ -69,5 +70,6 @@ router.post(
 );
 router.post("/mseal-wallet-topup", authenticateUser, initiateWalletTopup);
 router.post("/mseal-wallet-webhook", walletWebhook);
+router.post("/mseal-wallet/ticket-payment/:id",initiateNfcPayment)
 
 module.exports = router;
