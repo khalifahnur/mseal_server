@@ -28,13 +28,13 @@ const googleSignin = async (req: Request, res: Response) => {
       await user.save();
     }
 
-    const secretKey = await getSecretKey();
+    const secretKey = await getSecretKey(user._id.toString());
     const token = jwt.sign({ userId: user._id }, secretKey, {
       expiresIn: "24h",
     });
 
     res
-      .cookie("token", token, {
+      .cookie("user_auth", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",

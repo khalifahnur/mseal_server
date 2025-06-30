@@ -1,31 +1,37 @@
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
+import newSecretKey from "../../../lib/rotateSecretKey";
 import getSecretKey from "../../../lib/getSecretKey";
-import Redis from "ioredis";
+
 
 interface AuthenticatedRequest extends Request {
-  admin?: {
+  adminId?: {
     id: string;
   };
 }
 
-const redisClient = new Redis();
 
 const LogoutAdmin = async (req: AuthenticatedRequest, res: Response) => {
-  const token = req.cookies?.token;
+  const token = req.cookies?.admin_auth;
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
 
   try {
-    const secretKey = await getSecretKey();
+    const decoded = jwt.decode(token) as jwt.JwtPayload;
+    
+    if (!decoded?.adminId) {
+      return res.status(401).json({ message: "Invalid token structure" });
+    }
 
-    const decoded = jwt.verify(token, secretKey) as jwt.JwtPayload;
-    await redisClient.del(`token:${decoded.id}`);
+    const secretKey = await getSecretKey(decoded.adminId);
+    
+    jwt.verify(token, secretKey);
 
-    // Clear the cookie
-    res.clearCookie("token", {
+    await newSecretKey(decoded.adminId);
+
+    res.clearCookie("admin_auth", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
@@ -35,11 +41,18 @@ const LogoutAdmin = async (req: AuthenticatedRequest, res: Response) => {
     return res.status(200).json({ message: "Logged out successfully" });
   } catch (error: any) {
     if (error.name === "TokenExpiredError") {
+      res.clearCookie("admin_auth", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        path: "/",
+      });
       return res.status(401).json({ message: "Token has expired" });
     }
 
-    return res.status(401).json({ message: "Invalid or expired token" });
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
+
 
 module.exports = LogoutAdmin;

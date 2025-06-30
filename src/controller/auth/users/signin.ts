@@ -74,7 +74,7 @@ const loginUser = async (req: Request, res: Response) => {
       console.error("Failed to publish to sign-in queue:", queueError);
     }
     return res
-      .cookie("token", token, {
+      .cookie("user_auth", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // Only secure in production
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // 'lax' for local
