@@ -16,11 +16,15 @@ const handleNfcTicketPayment = async (req: Request, res: Response) => {
   const totalAmount = amount * quantity;
 
   // Decrypt userId from request params
-  const userId = decryptWallet(req.params.encryptedUserId);
+  const { id } = req.params;
+  const encryptedToken = decodeURIComponent(id);
+  const userId = decryptWallet(encryptedToken);
   if (!mongoose.isValidObjectId(userId)) {
     res.status(400).json({ error: "Invalid user ID" });
     return;
   }
+
+  console.log(req.body)
 
   if (
     !userId ||

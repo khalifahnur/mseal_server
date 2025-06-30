@@ -44,8 +44,8 @@ const getUserInfo = async (req: AuthenticatedRequest, res: Response) => {
       createdAt: membershipInfo?.createdAt || null,
       expDate: membershipInfo?.expDate || null,
       qrcode,
-      balance: walletInfo?.balance || 0,
-      walletId: walletInfo._id || null,
+      balance: walletInfo?.balance ?? 0,
+      walletId: walletInfo?._id ?? null,
     };
 
     return res.status(200).json(responseData);

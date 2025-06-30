@@ -30,7 +30,7 @@ const loginAdmin = async (req: Request, res: Response) => {
     });
 
     return res
-      .cookie("token", token, {
+      .cookie("admin_auth", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // Only secure in production
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // 'lax' for local
