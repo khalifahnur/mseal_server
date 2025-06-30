@@ -64,8 +64,8 @@ const loginUser = async (req: Request, res: Response) => {
       await publishToSignInQueue("sign_in_detected", {
         firstName: user.firstName,
         signinDateTime,
-        device,
-        browser,
+        deviceInfo:device,
+        browserInfo:browser,
         ipAddress,
         location,
         email,

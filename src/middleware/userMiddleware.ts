@@ -8,7 +8,7 @@ const authenticateUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.cookies.token;
+  const token = req.cookies.user_auth;
 
   if (!token) {
     return res.status(401).json({ message: "Access token is required" });

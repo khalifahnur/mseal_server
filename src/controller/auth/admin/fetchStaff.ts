@@ -22,7 +22,7 @@ const getAllStaff = async (req: AuthenticatedRequest, res: Response) => {
 
     return res.status(200).json(staffs);
   } catch (error) {
-    console.error("Error fetching all staff:", error);
+    //console.error("Error fetching all staff:", error);
     return res.status(500).json({ error: "Server error" });
   }
 };
