@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Your Ticket - M-seal</title>
     <style type="text/css">
       @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
@@ -11,12 +14,15 @@
         font-family: "Poppins", sans-serif;
         background-color: #f5f7fa;
         margin: 0;
-        padding: 0;
+        padding: 20px;
         color: #333;
+        min-height: 100vh;
+        box-sizing: border-box;
       }
 
       .ticket-container {
         max-width: 600px;
+        width: 100%;
         margin: 0 auto;
         background: #ffffff;
         border-radius: 12px;
@@ -34,14 +40,14 @@
 
       .ticket-header h1 {
         margin: 0;
-        font-size: 24px;
+        font-size: clamp(20px, 4vw, 24px);
         font-weight: 600;
       }
 
       .ticket-header p {
         margin: 5px 0 0;
         opacity: 0.9;
-        font-size: 16px;
+        font-size: clamp(14px, 3vw, 16px);
       }
 
       .ticket-body {
@@ -56,13 +62,14 @@
       }
 
       .info-item {
-        flex: 1;
-        min-width: 150px;
+        flex: 1 1 calc(50% - 20px);
+        min-width: 0;
+        margin-bottom: 15px;
       }
 
       .info-item h3 {
         margin: 0 0 8px;
-        font-size: 14px;
+        font-size: clamp(12px, 2.5vw, 14px);
         font-weight: 500;
         color: #777;
         text-transform: uppercase;
@@ -70,8 +77,9 @@
 
       .info-item p {
         margin: 0;
-        font-size: 18px;
+        font-size: clamp(12px, 2.5vw, 16px);
         font-weight: 500;
+        word-break: break-word;
       }
 
       .ticket-qr {
@@ -83,7 +91,7 @@
       }
 
       .ticket-qr img {
-        max-width: 200px;
+        max-width: 100%;
         height: auto;
         display: block;
         margin: 0 auto;
@@ -91,7 +99,7 @@
 
       .ticket-qr p {
         margin: 15px 0 0;
-        font-size: 14px;
+        font-size: clamp(13px, 3vw, 14px);
         color: #666;
       }
 
@@ -99,7 +107,7 @@
         background: linear-gradient(135deg, #fae115, #000);
         padding: 20px 30px;
         text-align: center;
-        font-size: 12px;
+        font-size: clamp(11px, 2.5vw, 12px);
         color: #ffffff;
         border-top: 1px solid #eee;
       }
@@ -109,29 +117,81 @@
         padding: 10px 15px;
         border-radius: 6px;
         font-family: monospace;
-        font-size: 14px;
+        font-size: clamp(12px, 2.5vw, 14px);
         color: #4a6cf7;
         margin-top: 20px;
         display: inline-block;
+        word-break: break-all;
       }
 
       .logo {
-        width: 120px;
+        width: clamp(80px, 20vw, 120px);
         margin-bottom: 15px;
       }
 
+      #canvas {
+        display: flex;
+        justify-content: center;
+      }
+
+      #canvas canvas,
+      #canvas svg {
+        width: 100% !important;
+        max-width: 200px !important;
+        height: auto !important;
+      }
+
       @media (max-width: 480px) {
+        body {
+          padding: 10px;
+        }
+
         .ticket-header {
-          padding: 20px;
+          padding: 20px 15px;
         }
 
         .ticket-body {
-          padding: 20px;
+          padding: 20px 15px;
+        }
+
+        .ticket-info {
+          gap: 15px;
         }
 
         .info-item {
-          min-width: 100%;
-          margin-bottom: 15px;
+          flex: 1 1 100%;
+        }
+
+        .ticket-qr {
+          margin: 20px 0;
+          padding: 15px;
+        }
+
+        .ticket-footer {
+          padding: 15px;
+        }
+        .qr-image {
+          width: 200px;
+          height: 200px;
+          margin: 0 auto;
+          display: block;
+          background: #000;
+          padding: 10px;
+          border-radius: 8px;
+        }
+      }
+
+      @media (max-width: 350px) {
+        .ticket-header h1 {
+          font-size: 18px;
+        }
+
+        .ticket-header p {
+          font-size: 13px;
+        }
+
+        .info-item p {
+          font-size: 13px;
         }
       }
     </style>
@@ -151,7 +211,7 @@
       <div class="ticket-body">
         <div class="ticket-info">
           <div class="info-item">
-            <h3>Event</h3>
+            <h3>Match</h3>
             <p>{{match}}</p>
           </div>
           <div class="info-item">
@@ -162,15 +222,11 @@
             <h3>Venue</h3>
             <p>{{venue}}</p>
           </div>
-          <div class="info-item">
-            <h3>Event ID</h3>
-            <p>{{eventId}}</p>
-          </div>
         </div>
 
         <div class="ticket-qr">
-          <p style="margin-bottom: 10">Scan this QR code at the entrance</p>
-          <div id="canvas" />
+          <p style="margin-bottom: 10px">Scan this QR code at the entrance</p>
+          <img src="cid:ticketqr@mseal" alt="QR Code" class="qr-image" />
         </div>
 
         <div style="text-align: center">
@@ -183,49 +239,8 @@
           Thank you for choosing M-seal. For any questions, please contact
           support@m-seal.com
         </p>
-        <p>&copy; 2025 M-seal. All rights reserved.</p>
+        <p>&copy; {{year}} M-seal. All rights reserved.</p>
       </div>
     </div>
   </body>
-  <script
-    type="text/javascript"
-    src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"
-  ></script>
-  <div id="canvas"></div>
-  <script type="text/javascript">
-    const qrData = "{{{qrcode}}}";
-
-    if (qrData && qrData !== "undefined") {
-      const qrCode = new QRCodeStyling({
-        width: 200,
-        height: 200,
-        type: "svg",
-        shape: "circle",
-        data: qrData,
-        image:
-          "https://res.cloudinary.com/dfuh1q6ic/image/upload/v1751304986/mseal-logo_dcsiqz.png",
-        dotsOptions: {
-          color: "#fae115",
-          type: "rounded",
-        },
-        backgroundOptions: {
-          color: "#1e1e1e",
-        },
-        imageOptions: {
-          crossOrigin: "anonymous",
-          margin: 20,
-          imageSize: 0.8,
-        },
-      });
-
-      const canvasElement = document.getElementById("canvas");
-      if (canvasElement) {
-        qrCode.append(canvasElement);
-      } else {
-        console.error("Could not find element with ID 'canvas'");
-      }
-    } else {
-      console.error("No QR code data provided");
-    }
-  </script>
 </html>

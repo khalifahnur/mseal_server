@@ -33,13 +33,8 @@ const sendSIgnIn = async (data: {
 }) => {
   try {
     const templateData = {
-      firstName: data.firstName,
-      signinDateTime: data.signinDateTime,
-      deviceInfo: data.deviceInfo,
-      browserInfo: data.browserInfo,
-      ipAddress: data.ipAddress,
-      location: data.location,
-      email: data.email,
+      ...data,
+      year:new Date().getFullYear(),
     };
 
     const htmlContent = htmlCompiled(templateData);

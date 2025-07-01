@@ -4,26 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Membership Purchase Confirmation - MSeal</title>
-    <style>
+    <style type="text/css">
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333333;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
             margin: 0;
             padding: 0;
-            background-color: #e8e8e8;
+            color: #333;
+            line-height: 1.6;
         }
         .container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #ffffff;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         .header {
             text-align: center;
             padding: 20px 0;
             border-bottom: 10px solid #000;
-            background-color: #fae115;
+            background: linear-gradient(135deg, #fae115, #000);
         }
         .logo {
             max-height: 60px;
@@ -34,8 +37,8 @@
             text-align: center;
         }
         .confirmation-message h1 {
-            color: #333333;
-            font-size: 32px;
+            color: #000000;
+            font-size: 17px;
             margin-bottom: 15px;
             font-weight: 600;
         }
@@ -60,7 +63,7 @@
         }
         .membership-details h2 {
             color: #333333;
-            font-size: 20px;
+            font-size: 16px;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -73,7 +76,7 @@
         .detail-row:last-child {
             border-bottom: none;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
             color: #4CAF50;
         }
         .benefits-section {
@@ -81,7 +84,7 @@
         }
         .benefits-section h2 {
             color: #333333;
-            font-size: 20px;
+            font-size: 16px;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -152,7 +155,7 @@
             text-align: center;
             font-size: 12px;
             color: #3d3c38;
-            background-color: #fae115;
+            background: linear-gradient(135deg, #fae115, #000);
             border-top: 3px solid #000;
             width: 100%;
             max-width: 944px;
@@ -179,7 +182,7 @@
                 padding: 10px;
             }
             .confirmation-message h1 {
-                font-size: 28px;
+                font-size: 16px;
             }
             .detail-row {
                 flex-direction: column;
@@ -194,13 +197,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png" alt="MSeal Logo" class="logo" />
-            <h2 style="font-size:42px;font-weight:600;font-style:normal;font-stretch:normal;line-height:normal;letter-spacing:normal;text-align:center;color:#000000;margin:25px 0">MSeal Membership</h2>
+            <img src="https://res.cloudinary.com/dfuh1q6ic/image/upload/v1751304986/mseal-logo_dcsiqz.png" alt="MSeal Logo" class="logo" />
+            <h2 style="color: #fff;">MSeal Membership</h2>
         </div>
         
         <div class="confirmation-message">
-            <h1>Welcome to {{membershipTier}}</h1>
-            <div class="tier-badge tier-{{membershipTierLower}}">{{membershipTier}} Member</div>
+            <h1>Welcome to {{membershipTier}} tier</h1>
             <p>Congratulations, {{firstName}}! Your membership purchase was successful.</p>
             <p>Your {{membershipTier}} membership is now active and ready to use.</p>
         </div>
@@ -263,7 +265,7 @@
         </div>
         
         <div class="footer">
-            <div style="width:100%;background-size:cover;background-position:center;height:60px;background-image:url('https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png')"></div>
+            <!-- <div style="width:100%;background-size:cover;background-position:center;height:60px;background-image:url('https://res.cloudinary.com/dfuh1q6ic/image/upload/v1751304986/mseal-logo_dcsiqz.png')"></div> -->
             <p>Thank you for choosing MSeal Membership! We're excited to have you on board.</p>
             <p>Need help? Contact us at <a href="mailto:support@mseal.com">support@mseal.com</a> or call <a href="tel:+254712345678">+254 (7123) 456-78</a></p>
             <p>&copy; 2025 MSeal. All rights reserved.</p>

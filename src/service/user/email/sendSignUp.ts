@@ -23,15 +23,20 @@ const htmlTemplate = fs.readFileSync(
 const htmlCompiled = Handlebars.compile(htmlTemplate);
 
 const sendSIgnUp = async (data: {
-    firstName:string;
-    email:string;
-    registrationDate:Date;
+  firstName: string;
+  email: string;
+  registrationDate: Date;
 }) => {
   try {
     const templateData = {
       firstName: data.firstName,
       email: data.email,
-      registrationDate:data.registrationDate
+      registrationDate: data.registrationDate.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      year: new Date().getFullYear(),
     };
 
     const htmlContent = htmlCompiled(templateData);

@@ -3,119 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to MSeal Membership</title>
-    <style>
+    <title>Welcome to MSeal</title>
+    <style type="text/css">
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333333;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
             margin: 0;
             padding: 0;
-            background-color: #e8e8e8;
+            color: #333;
+            line-height: 1.6;
         }
-        .container {
+        
+        .email-container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #ffffff;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
+        
         .header {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 10px solid #000;
-            background-color: #fae115;
-        }
-        .logo {
-            max-height: 60px;
-            width: auto;
-        }
-        .welcome-message {
-            padding: 30px 0;
+            background: linear-gradient(135deg, #fae115, #000);
+            color: white;
+            padding: 40px 30px;
             text-align: center;
         }
-        .welcome-message h1 {
-            color: #333333;
+        
+        .header h1 {
+            margin: 15px 0 0;
             font-size: 28px;
-            margin-bottom: 15px;
             font-weight: 600;
         }
-        .welcome-message p {
-            font-size: 16px;
-            margin-bottom: 15px;
+        
+        .logo {
+            width: 120px;
+            height: auto;
         }
-        .features-section {
-            padding: 20px 0;
-            background-color: #f8f8f8;
-            margin: 20px 0;
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .welcome-message {
+            font-size: 18px;
+            margin-bottom: 25px;
+        }
+        
+        .account-info {
+            background-color: #f9f9f9;
             border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
         }
-        .features-section h2 {
-            color: #333333;
-            font-size: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .feature-item {
-            display: flex;
-            align-items: center;
+        
+        .info-item {
             margin-bottom: 15px;
-            padding: 0 20px;
         }
-        .feature-icon {
-            width: 30px;
-            height: 30px;
-            background-color: #4CAF50;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            flex-shrink: 0;
+        
+        .info-item h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #777;
+            text-transform: uppercase;
         }
-        .feature-icon::after {
-            content: "✓";
-            color: white;
-            font-weight: bold;
+        
+        .info-item p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
         }
+        
         .button {
             display: inline-block;
-            padding: 15px 30px;
-            background-color: #4CAF50;
-            color: #ffffff;
+            background-color: #000;
+            color: white;
             text-decoration: none;
+            padding: 12px 30px;
             border-radius: 6px;
-            font-weight: bold;
-            font-size: 16px;
-            margin: 10px;
-        }
-        .button:hover {
-            background-color: #45a049;
-        }
-        .cta-section {
-            text-align: center;
-            padding: 30px 0;
-        }
-        .account-details {
-            background-color: #f8f8f8;
-            padding: 20px;
-            border-radius: 8px;
+            font-weight: 500;
             margin: 20px 0;
-        }
-        .account-details h2 {
-            color: #333333;
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-        .footer {
-            margin-top: 30px;
-            padding-top: 20px;
             text-align: center;
-            font-size: 12px;
-            color: #3d3c38;
-            background-color: #fae115;
-            border-top: 3px solid #000;
-            width: 100%;
-            max-width: 944px;
         }
         .social-links {
             text-align: center;
@@ -127,92 +98,75 @@
             color: #333333;
             text-decoration: none;
         }
-        @media only screen and (max-width: 600px) {
-            .container {
-                padding: 10px;
+        .footer {
+            background-color: #f5f7fa;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px;
             }
-            .welcome-message h1 {
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
                 font-size: 24px;
             }
-            .feature-item {
-                padding: 0 10px;
+            
+            .welcome-message {
+                font-size: 16px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="email-container">
         <div class="header">
-            <img src="https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png" alt="MSeal Logo" class="logo" />
-            <h2 style="font-size:42px;font-weight:600;font-style:normal;font-stretch:normal;line-height:normal;letter-spacing:normal;text-align:center;color:#000000;margin:25px 0">Welcome to MSeal</h2>
+            <img src="https://res.cloudinary.com/dfuh1q6ic/image/upload/v1751304986/mseal-logo_dcsiqz.png" alt="MSeal Logo" class="logo">
+            <h1>Welcome to MSeal!</h1>
         </div>
         
-        <div class="welcome-message">
-            <h1>Welcome, {{firstName}}!</h1>
-            <p>Thank you for joining MSeal Membership. Your account has been successfully created and you're now part of our exclusive community.</p>
-            <p>Get ready to unlock premium features, exclusive content, and connect with fellow members.</p>
+        <div class="content">
+            <p class="welcome-message">Hi <strong>{{firstName}}</strong>, thank you for joining MSeal. We're excited to have you on board!</p>
+            
+            <div class="account-info">
+                <div class="info-item">
+                    <h3>Account Created</h3>
+                    <p>{{registrationDate}}</p>
+                </div>
+                <div class="info-item">
+                    <h3>Registered Email</h3>
+                    <p>{{email}}</p>
+                </div>
+            </div>
+            
+            <p>To get started with your new account, you can:</p>
+            
+            <a href="#" class="button">Complete Your Profile</a>
+            
+            <p>If you have any questions, feel free to reply to this email or contact our support team.</p>
+            
+            <p>Welcome aboard,<br>The MSeal Team</p>
         </div>
-
-        <div class="account-details">
-            <h2>Your Account Details</h2>
-            <p><strong>Email:</strong> {{email}}</p>
-            <!-- <p><strong>Member ID:</strong> {{memberID}}</p> -->
-            <p><strong>Registration Date:</strong> {{registrationDate}}</p>
-            <p><strong>Account Status:</strong> Active</p>
-        </div>
-        
-        <img src="https://ci3.googleusercontent.com/meips/ADKq_NYcaTCXJASTcXc2daG_goKcFYL19p-0ygK2gaP6d9b_-R7oTHbdah9Nc7qpt6-RQlEJRSTkOzhEDlIa3EcVbVh-FY34SoLl1cWDxXh-eDfNAdLe7YTBWS5GM0GDX30=s0-d-e1-ft#https://s3-eu-west-1.amazonaws.com/glovo-emails/static/dist/img/wave.png" alt="separator" style="width:100%;object-fit:cover">
-
-            <h2>What's Next?</h2>
-            <div class="feature-item">
-                <div class="feature-icon"></div>
-                <div>
-                    <strong>Complete Your Profile:</strong> Add your details to personalize your experience
-                </div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"></div>
-                <div>
-                    <strong>Explore Features:</strong> Discover all the tools and resources available to you
-                </div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"></div>
-                <div>
-                    <strong>Upgrade to Premium:</strong> Unlock advanced features with our premium plans
-                </div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"></div>
-                <div>
-                    <strong>Connect with Community:</strong> Join discussions and network with other members
-                </div>
-            </div>
-        </div> -->
-
-        <div class="cta-section">
-            <h2>Ready to Get Started?</h2>
-            <p>Click the button below to access your new account and start exploring.</p>
-            <a href="{{loginUrl}}" class="button">Access My Account</a>
-            <a href="{{membershipPlansUrl}}" class="button" style="background-color: #333333;">View Membership Plans</a>
-        </div>
-
-        <img src="https://ci3.googleusercontent.com/meips/ADKq_NYcaTCXJASTcXc2daG_goKcFYL19p-0ygK2gaP6d9b_-R7oTHbdah9Nc7qpt6-RQlEJRSTkOzhEDlIa3EcVbVh-FY34SoLl1cWDxXh-eDfNAdLe7YTBWS5GM0GDX30=s0-d-e1-ft#https://s3-eu-west-1.amazonaws.com/glovo-emails/static/dist/img/wave.png" alt="separator" style="width:100%;object-fit:cover">
 
         <div class="social-links">
             <p>Follow us on social media for updates and tips:</p>
-            <a href="{{facebookUrl}}">Facebook</a> |
-            <a href="{{twitterUrl}}">Twitter</a> |
-            <a href="{{linkedinUrl}}">LinkedIn</a> |
-            <a href="{{instagramUrl}}">Instagram</a>
+            <a href="#">Facebook</a> |
+            <a href="#">X</a> |
+            <a href="#">TikTok</a> |
+            <a href="#">Instagram</a>
         </div>
         
         <div class="footer">
-            <div style="width:100%;background-size:cover;background-position:center;height:60px;background-image:url('https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png')"></div>
-            <p>Need help getting started? Contact our support team:</p>
-            <p><a href="mailto:support@mseal.com">support@mseal.com</a> or call us at <a href="tel:+254712345678">+254 (7123) 456-78</a></p>
-            <p>&copy; 2025 MSeal. All rights reserved.</p>
-            <p>Muranga Stadium, Muranga County, Kenya</p>
+            <p>© {{year}} MSeal. All rights reserved.</p>
+            <p><a href="#" style="color: #fae115;">Privacy Policy</a> | <a href="#" style="color: #fae115;">Terms of Service</a></p>
         </div>
     </div>
 </body>

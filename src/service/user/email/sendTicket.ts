@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import nodemailer from "nodemailer";
 import Handlebars from "handlebars";
+import QRCode from "qrcode";
 
 const encryptedTicket = require("../../../lib/encryptedQr");
 
@@ -31,18 +32,33 @@ const sendTicketConfirmation = async (
 ) => {
   let eventId = metadata.eventId;
   const minimalTicketData = {
-    ticketId,
+    id:ticketId,
     eventId,
   };
 
-  const qrcode = encryptedTicket(minimalTicketData);
+  const encryptedData = encryptedTicket(minimalTicketData);
+
+  const qrCodeDataURL = await QRCode.toDataURL(encryptedData, {
+      width: 400,
+      margin: 2,
+      color: {
+        dark: "#fae115",
+        light: "#000000"
+      }
+    });
+
   try {
     const templateData = {
-      eventId,
-      date: metadata.date,
+      ticketId,
+      date: new Date(metadata.date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
       venue: metadata.venue,
       match: metadata.match,
-      qrcode,
+      qrcode: qrCodeDataURL,
+      year: new Date().getFullYear()
     };
 
     const htmlContent = htmlCompiled(templateData);
@@ -50,8 +66,14 @@ const sendTicketConfirmation = async (
     const mailOptions = {
       from: `"M-seal Team" <${process.env.GMAIL_USER}>`,
       to: recipientEmail,
-      subject: `Your M-seal ticket #-${eventId}`,
+      subject: `M-seal ticket for ${metadata.match}`,
       html: htmlContent,
+      attachments: [{
+        filename: 'ticket-qr.png',
+        content: qrCodeDataURL.split('base64,')[1],
+        encoding: 'base64',
+        cid: 'ticketqr@mseal' // Content ID for embedding
+      }]
     };
 
     const info = await transporter.sendMail(mailOptions);
