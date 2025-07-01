@@ -38,7 +38,7 @@ const LogoutUser = async (req: AuthenticatedRequest, res: Response) => {
     return res.status(200).json({ message: "Logged out successfully" });
   } catch (error: any) {
     if (error.name === "TokenExpiredError") {
-      res.clearCookie("admin_auth", {
+      res.clearCookie("user_auth", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
