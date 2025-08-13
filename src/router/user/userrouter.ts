@@ -9,6 +9,9 @@ const userInfo = require("../../controller/auth/users/fetchuserinfo");
 const phoneNumber = require("../../controller/auth/users/updatephoneNumber");
 const userMiddleware = require("../../middleware/userMiddleware");
 const logoutUser = require("../../controller/auth/users/logout");
+const resetCode = require("../../controller/auth/users/forgotpassword");
+const verifyCode = require("../../controller/auth/users/verifycode");
+const newPsswd = require("../../controller/auth/users/newpassword")
 
 const googleSignin = require("../../controller/auth/users/google-signin");
 
@@ -32,5 +35,9 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/" }),
   googleSignin
 );
+
+router.post("/forgot-password/verify-email",resetCode),
+router.post("/forgot-password/verify-code", verifyCode),
+router.post("/forgot-password/new-passowrd", newPsswd),
 
 module.exports = router;

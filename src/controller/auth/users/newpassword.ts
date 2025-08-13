@@ -1,7 +1,7 @@
 import {Request,Response} from 'express'
-const User = require('../../../model/user');
+import { hashPassword } from "../../../lib/hashPassword";
 
-const bcrypt = require('bcrypt');
+const User = require('../../../model/user');
 
 const resetPassword =  async (req:Request, res:Response) => {
   const { email, newPassword } = req.body;
@@ -11,11 +11,9 @@ const resetPassword =  async (req:Request, res:Response) => {
 
     if (!user) return res.status(404).send('User not found');
 
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await hashPassword(newPassword);
     user.password = hashedPassword;
 
-    // Clear verification code and expirtion
     user.verificationCode = null;
     user.verificationCodeExpiration = null;
 
