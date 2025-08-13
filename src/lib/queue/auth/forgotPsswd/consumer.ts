@@ -5,10 +5,10 @@ const sendResetCode = require("../../../../service/user/email/sendForgotPsswd")
 
 dotenv.config();
 
-// const rabbitMQUrl =
-//   process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
 const rabbitMQUrl =
-   "amqp://guest:guest@localhost:5672";
+  process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
+// const rabbitMQUrl =
+//    "amqp://guest:guest@localhost:5672";
 const queue = "reset_code";
 
 

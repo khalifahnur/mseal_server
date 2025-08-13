@@ -5,9 +5,9 @@ const sendSIgnUp = require("../../../../service/user/email/sendSignUp");
 
 dotenv.config();
 
-// const rabbitMQUrl =
-//   process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
-const rabbitMQUrl = "amqp://guest:guest@localhost:5672";
+const rabbitMQUrl =
+  process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
+// const rabbitMQUrl = "amqp://guest:guest@localhost:5672";
 const queue = "email_signup";
 
 interface QueueMessage {

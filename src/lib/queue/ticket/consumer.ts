@@ -4,10 +4,10 @@ const sendTicketConfirmation = require("../../../service/user/email/sendTicket")
 
 dotenv.config();
 
-// const rabbitMQUrl =
-//   process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
 const rabbitMQUrl =
-   "amqp://guest:guest@localhost:5672";
+  process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
+// const rabbitMQUrl =
+//    "amqp://guest:guest@localhost:5672";
 const queue = "email_ticket_confirmation";
 
 
