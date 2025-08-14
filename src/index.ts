@@ -39,6 +39,8 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
+app.set('trust proxy', true);
+
 const port = process.env.PORT || 3002;
 const MongodbConn = process.env.MONGODB_CONN || "";
 
@@ -69,7 +71,7 @@ app.use(morgan("combined"));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true, limit: "5mb" }));
 app.use(bodyParser.json({ limit: "1mb" }));
-//app.set('trust proxy', true);
+
 
 
 const limiter = rateLimit({
