@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ioredis_1 = __importDefault(require("ioredis"));
 const generateSecretKey_1 = __importDefault(require("./generateSecretKey"));
 const redis = new ioredis_1.default();
-const SECRET_KEY_REDIS_KEY = "jwt_secret_key";
-const getSecretKey = async () => {
+const getSecretKey = async (userId) => {
+    const SECRET_KEY_REDIS_KEY = `user:${userId}:jwt_secret`;
     let secretKey = await redis.get(SECRET_KEY_REDIS_KEY);
     if (!secretKey) {
         secretKey = (0, generateSecretKey_1.default)();

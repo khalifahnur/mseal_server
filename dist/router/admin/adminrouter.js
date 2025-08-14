@@ -12,6 +12,7 @@ const LogoutAdmin = require("../../controller/auth/admin/logout");
 const StaffSignUp = require("../../controller/auth/admin/staffSignup");
 const FetchAllStaff = require("../../controller/auth/admin/fetchStaff");
 const RemoveStaffAccount = require("../../controller/auth/admin/removeStaff");
+const FetchMembershipInfo = require("../../controller/auth/admin/fetchMemberInfo");
 const authenticateAdmin = require("../../middleware/adminMiddleware");
 // const AuthController = require("../controllers/AuthController");
 // const forgotPsswdController = require("../controllers/ForgotPsswdController");
@@ -28,5 +29,6 @@ router.post("/logout-admin", authenticateAdmin, LogoutAdmin);
 router.post("/Staff/app-signup", authenticateAdmin, StaffSignUp);
 router.get("/fetch-all-staff-details", authenticateAdmin, FetchAllStaff);
 router.post("/remove-staff-account", authenticateAdmin, RemoveStaffAccount);
+router.get("/fetch-membership-info", authenticateAdmin, FetchMembershipInfo);
 module.exports = router;
 //# sourceMappingURL=adminrouter.js.map

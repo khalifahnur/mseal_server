@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const User = require('../../../model/user');
-const Membership = require('../../../model/membership');
+const User = require("../../../model/user");
+const Membership = require("../../../model/membership");
+const Wallet = require("../../../model/wallet");
 const encryptQr = require("../../../lib/encryptedQr");
 const getUserInfo = async (req, res) => {
     const userId = req.user?.id;
@@ -19,6 +20,7 @@ const getUserInfo = async (req, res) => {
             membershipInfo = await Membership.findById(userInfo.membershipId);
             qrcode = encryptQr(userInfo.membershipId);
         }
+        const walletInfo = await Wallet.findOne({ userId }).lean();
         const responseData = {
             firstName: userInfo.firstName,
             lastName: userInfo.lastName,
@@ -26,10 +28,11 @@ const getUserInfo = async (req, res) => {
             phoneNumber: userInfo.phoneNumber,
             membershipTier: membershipInfo?.membershipTier || null,
             membershipId: userInfo.membershipId || null,
-            balance: membershipInfo?.amount || 0,
             createdAt: membershipInfo?.createdAt || null,
             expDate: membershipInfo?.expDate || null,
             qrcode,
+            balance: walletInfo?.balance ?? 0,
+            walletId: walletInfo?._id ?? null,
         };
         return res.status(200).json(responseData);
     }

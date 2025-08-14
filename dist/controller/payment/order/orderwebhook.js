@@ -9,7 +9,8 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const Order = require("../../../model/order");
 const Merchandise = require("../../../model/merchandise");
-const sendOrderConfirmation = require("../../../service/user/email/sendOrder");
+const Transaction = require("../../../model/transaction");
+const publishToQueue = require("../../../lib/queue/order_email/producer");
 dotenv_1.default.config();
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
 const handlePaystackWebhook = async (req, res) => {
@@ -46,9 +47,9 @@ const handlePaystackWebhook = async (req, res) => {
                 if (!order) {
                     throw new Error("Order not found");
                 }
-                if (order.totalAmount * 100 !== 5) {
-                    throw new Error("Amount mismatch");
-                }
+                // if (order.totalAmount * 100 !== amount) {
+                //   throw new Error("Amount mismatch");
+                // }
                 for (const item of order.items) {
                     const product = await Merchandise.findById(item.productId, null, {
                         session,
@@ -59,12 +60,25 @@ const handlePaystackWebhook = async (req, res) => {
                     product.stock -= item.quantity;
                     await product.save({ session });
                 }
+                const transaction = new Transaction({
+                    userId: metadata.userId,
+                    transactionType: "merchandise",
+                    amount: amount / 100,
+                    status: "Success",
+                    paymentMethod: "Mpesa",
+                    reference,
+                });
+                await transaction.save({ session });
                 order.status = "Processing";
                 order.paymentStatus = "Completed";
                 order.updatedAt = new Date();
                 await order.save({ session });
-                console.log(order);
-                await sendOrderConfirmation(order, customer.email, metadata);
+                // console.log(order);
+                await publishToQueue("email_order_confirmation", {
+                    orderId: order._id,
+                    email: customer.email,
+                    metadata,
+                });
             });
             res.status(200).json({ message: "Webhook processed" });
         }

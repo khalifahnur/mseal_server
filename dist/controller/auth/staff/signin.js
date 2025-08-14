@@ -19,7 +19,7 @@ const loginStaff = async (req, res) => {
         if (!isPasswordMatch) {
             return res.status(401).json({ message: "Incorrect Email/Password" });
         }
-        const secretKey = await (0, getSecretKey_1.default)();
+        const secretKey = await (0, getSecretKey_1.default)(staff._id);
         const token = jsonwebtoken_1.default.sign({ staffId: staff._id }, secretKey, {
             expiresIn: "24h",
         });

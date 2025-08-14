@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const hashPassword_1 = require("../../../lib/hashPassword");
+const date_fns_1 = require("date-fns");
 const User = require("../../../model/user");
+const publishToSignUpQueue = require("../../../lib/queue/auth/signup/producer");
 const signUpUser = async (req, res) => {
     try {
         const { firstName, lastName, email, password, phoneNumber } = req.body;
@@ -29,6 +31,17 @@ const signUpUser = async (req, res) => {
             phoneNumber: newPhoneNumber,
         });
         await newUser.save();
+        try {
+            const registrationDate = (0, date_fns_1.format)(new Date(), "yyyy-MM-dd");
+            await publishToSignUpQueue("email_signup", {
+                firstName,
+                registrationDate,
+                email,
+            });
+        }
+        catch (queueError) {
+            console.error("Failed to publish to sign-in queue:", queueError);
+        }
         res.status(200).json({ message: "User created successfully" });
     }
     catch (error) {

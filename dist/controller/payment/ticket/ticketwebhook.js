@@ -5,10 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const crypto_1 = __importDefault(require("crypto"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const axios_1 = __importDefault(require("axios"));
 dotenv_1.default.config();
 const Ticket = require("../../../model/ticket");
-const User = require("../../../model/user");
-const generateTicketId = require("../../../lib/generateTicketId");
+const Transaction = require("../../../model/transaction");
+const Event = require("../../../model/event");
+const publishToTicketQueue = require("../../../lib/queue/ticket/producer");
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
 const handlePaystackWebhook = async (req, res) => {
     const hash = crypto_1.default
@@ -20,38 +23,58 @@ const handlePaystackWebhook = async (req, res) => {
         return res.status(401).json({ error: "Invalid signature" });
     }
     const event = req.body;
-    if (event.event === "charge.success") {
-        console.log("charge success");
-        const data = event.data;
-        const userId = data.metadata.userId;
-        const email = data.customer.email;
+    if (event.event === "charge.success" &&
+        event.data.channel === "mobile_money") {
+        const { reference, amount, metadata, customer } = event.data;
+        const existingTicket = await Ticket.findOne({
+            paymentReference: reference,
+        });
+        if (existingTicket?.paymentStatus === "Completed") {
+            return res.status(200).json({ message: "Transaction already processed" });
+        }
+        const session = await mongoose_1.default.startSession();
         try {
-            const user = await User.findById(userId);
-            if (!user) {
-                return res.status(404).json({ error: "User not found" });
-            }
-            const ticket = new Ticket({
-                userId,
-                ticketId: generateTicketId({
-                    eventId: data.metadata.eventId,
-                    quantity: data.metadata.quantity,
-                    index: (await Ticket.countDocuments({ eventId: data.metadata.eventId })) +
-                        1,
-                    timestamp: new Date(),
-                }),
-                quantity: data.metadata.quantity,
-                amount: data.amount / 100,
-                status: "valid",
-                paymentReference: data.reference,
-                event: {
-                    eventId: data.metadata.eventId,
-                    date: data.metadata.date,
-                    venue: data.metadata.venue,
-                    match: data.metadata.match,
-                },
+            await session.withTransaction(async () => {
+                const verifyResponse = await axios_1.default.get(`https://api.paystack.co/transaction/verify/${reference}`, {
+                    headers: {
+                        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+                    },
+                });
+                if (verifyResponse.data.data.status !== "success") {
+                    throw new Error("Transaction verification failed");
+                }
+                const tickets = await Ticket.findOne({ paymentReference: reference }, null, { session });
+                if (!tickets) {
+                    throw new Error("Ticket not found");
+                }
+                // if (tickets.totalAmount * 100 !== amount) {
+                //   throw new Error("Amount mismatch");
+                // }
+                const event = await Event.findById(metadata.eventId, null, {
+                    session,
+                });
+                if (!event || event.availableTickets < metadata.quantity) {
+                    throw new Error(`Insufficient ticket ${metadata.productId}`);
+                }
+                event.availableTickets -= metadata.quantity;
+                await event.save({ session });
+                (tickets.status = "valid"), (tickets.paymentStatus = "Completed");
+                await tickets.save({ session });
+                const transaction = new Transaction({
+                    userId: metadata.userId,
+                    transactionType: "ticket",
+                    amount: amount / 100,
+                    status: "Success",
+                    paymentMethod: "Mpesa",
+                    reference,
+                });
+                await transaction.save({ session });
+                await publishToTicketQueue("email_ticket_confirmation", {
+                    ticketId: tickets._id,
+                    recipientEmail: customer.email,
+                    metadata,
+                });
             });
-            await ticket.save();
-            console.log("🎫 Ticket saved for", email);
             res.status(200).send("Webhook processed successfully");
         }
         catch (err) {

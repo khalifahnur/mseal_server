@@ -20,12 +20,12 @@ const googleSignin = async (req, res) => {
             });
             await user.save();
         }
-        const secretKey = await (0, getSecretKey_1.default)();
+        const secretKey = await (0, getSecretKey_1.default)(user._id.toString());
         const token = jsonwebtoken_1.default.sign({ userId: user._id }, secretKey, {
             expiresIn: "24h",
         });
         res
-            .cookie("token", token, {
+            .cookie("user_auth", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",

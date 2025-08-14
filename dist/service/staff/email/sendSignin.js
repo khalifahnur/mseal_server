@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
+require('dotenv').config();
 const transporter = nodemailer_1.default.createTransport({
     service: "gmail",
     auth: {
@@ -18,7 +19,7 @@ const sendStaffSigninEmail = (recipientEmail) => {
     const htmlTemplate = fs_1.default.readFileSync(path_1.default.join(__dirname, "..", "template", "staffsignin.html"), "utf8");
     const personalizedHtmlTemplate = htmlTemplate.replace("{{email}}", recipientEmail);
     const mailOptions = {
-        from: '"Mseal Team" <no-reply@mseal.com>',
+        from: `"M-seal Team" <${process.env.GMAIL_USER}>`,
         to: recipientEmail,
         subject: "Mseal staff Sign-In Verification",
         html: personalizedHtmlTemplate,

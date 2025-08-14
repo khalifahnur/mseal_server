@@ -20,12 +20,12 @@ const loginAdmin = async (req, res) => {
         if (!isPasswordMatch) {
             return res.status(401).json({ message: "Incorrect Email/Password" });
         }
-        const secretKey = await (0, getSecretKey_1.default)();
+        const secretKey = await (0, getSecretKey_1.default)(admin._id.toString());
         const token = jsonwebtoken_1.default.sign({ adminId: admin._id }, secretKey, {
             expiresIn: "24h",
         });
         return res
-            .cookie("token", token, {
+            .cookie("admin_auth", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production", // Only secure in production
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // 'lax' for local

@@ -6,9 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
+const Membership = require("../../../model/membership");
 const initiatePayment = async (req, res) => {
-    const { phoneNumber, amount, email, membershipTier, dob, physicalAddress, city } = req.body;
+    const { phoneNumber, amount, email, membershipTier, dob, physicalAddress, city, } = req.body;
     const userId = req.user?.id;
     if (!PAYSTACK_SECRET_KEY) {
         return res.status(500).json({ error: "Paystack secret key is missing" });
@@ -38,6 +39,18 @@ const initiatePayment = async (req, res) => {
                 "Content-Type": "application/json",
             },
         });
+        const membership = new Membership({
+            userId,
+            membershipTier,
+            dob: dob || null,
+            physicalAddress,
+            city,
+            amount,
+            reference: response.data.data.reference,
+            paymentStatus: "Pending",
+            status: "Pending",
+        });
+        await membership.save();
         res.json({
             message: "STK push initiated",
             status: true,
@@ -46,7 +59,12 @@ const initiatePayment = async (req, res) => {
     }
     catch (error) {
         console.error("Error initiating payment:", error.response?.data || error.message);
-        res.status(500).json({ error: "Failed to initiate payment", details: error.response?.data || error.message });
+        res
+            .status(500)
+            .json({
+            error: "Failed to initiate payment",
+            details: error.response?.data || error.message,
+        });
     }
 };
 module.exports = initiatePayment;

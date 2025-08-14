@@ -1,18 +1,24 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const Handlebars = require('handlebars');
+const handlebars_1 = __importDefault(require("handlebars"));
 const Merchandise = require('../../../model/merchandise');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
+    port: 587,
+    secure: false,
     auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_PASS,
     },
 });
 const htmlTemplate = fs.readFileSync(path.join(__dirname, '..', 'template', 'order.html'), 'utf8');
-const htmlCompiled = Handlebars.compile(htmlTemplate);
+const htmlCompiled = handlebars_1.default.compile(htmlTemplate);
 const sendOrderConfirmation = async (order, recipientEmail, metadata) => {
     try {
         const productIds = order.items.map((item) => item.productId);

@@ -17,8 +17,13 @@ const membershipSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ["valid", "denied"],
-        default: "valid",
+        enum: ["Active", "Inactive", "Pending"],
+        default: "Inactive",
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['Pending', 'Completed', 'Failed'],
+        default: 'Pending',
     },
     dob: { type: String, required: true },
     physicalAddress: { type: String, required: true },
@@ -26,14 +31,6 @@ const membershipSchema = new Schema({
     reference: { type: String, unique: true },
     createdAt: { type: Date, default: Date.now },
     expDate: { type: Date },
-});
-membershipSchema.pre("save", function (next) {
-    if (!this.expDate) {
-        const date = new Date(this.createdAt || Date.now());
-        date.setMonth(date.getMonth() + 1);
-        this.expDate = date;
-    }
-    next();
 });
 const Membership = model("Membership", membershipSchema);
 module.exports = Membership;

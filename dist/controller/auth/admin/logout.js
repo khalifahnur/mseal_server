@@ -4,33 +4,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const rotateSecretKey_1 = __importDefault(require("../../../lib/rotateSecretKey"));
 const getSecretKey_1 = __importDefault(require("../../../lib/getSecretKey"));
-const ioredis_1 = __importDefault(require("ioredis"));
-const redisClient = new ioredis_1.default();
 const LogoutAdmin = async (req, res) => {
-    const token = req.cookies?.token;
+    const token = req.cookies?.admin_auth;
     if (!token) {
         return res.status(401).json({ message: "No token provided" });
     }
     try {
-        const secretKey = await (0, getSecretKey_1.default)();
-        const decoded = jsonwebtoken_1.default.verify(token, secretKey);
-        await redisClient.del(`token:${decoded.id}`);
-        // Clear the cookie
-        res.clearCookie("token", {
+        const decoded = jsonwebtoken_1.default.decode(token);
+        if (!decoded?.adminId) {
+            return res.status(401).json({ message: "Invalid token structure" });
+        }
+        const secretKey = await (0, getSecretKey_1.default)(decoded.adminId);
+        jsonwebtoken_1.default.verify(token, secretKey);
+        await (0, rotateSecretKey_1.default)(decoded.adminId);
+        res.clearCookie("admin_auth", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // set to true in production
+            secure: process.env.NODE_ENV === "production",
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            path: "/", // ensure the path matches where the cookie was set
+            path: "/",
         });
         return res.status(200).json({ message: "Logged out successfully" });
     }
     catch (error) {
-        // Optional: only really needed if you’re relying on the verification step
         if (error.name === "TokenExpiredError") {
+            res.clearCookie("admin_auth", {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+                path: "/",
+            });
             return res.status(401).json({ message: "Token has expired" });
         }
-        return res.status(401).json({ message: "Invalid or expired token" });
+        return res.status(401).json({ message: "Invalid token" });
     }
 };
 module.exports = LogoutAdmin;
