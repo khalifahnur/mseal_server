@@ -2,9 +2,6 @@ import fs from "fs";
 import path from "path";
 import nodemailer from "nodemailer";
 import Handlebars from "handlebars";
-import QRCode from "qrcode";
-
-const encryptedTicket = require("../../../lib/encryptedQr");
 
 require("dotenv").config();
 
@@ -25,40 +22,28 @@ const htmlTemplate = fs.readFileSync(
 
 const htmlCompiled = Handlebars.compile(htmlTemplate);
 
-const sendTicketConfirmation = async (
+const sendTicketValidConfirmation = async (
   ticketId: string,
   recipientEmail: string,
-  metadata: any
+  fullName?: string,
+  eventName?: string,
+  scanTime?: any,
+  date?: any,
+  venue?: string,
+  seat?: string,
+  quantity?: any
 ) => {
-  let eventId = metadata.eventId;
-  const minimalTicketData = [{
-    id:ticketId,
-    eventId,
-  }];
-
-  const encryptedData = encryptedTicket(minimalTicketData);
-
-  const qrCodeDataURL = await QRCode.toDataURL(encryptedData, {
-      width: 400,
-      margin: 2,
-      color: {
-        dark: "#fae115",
-        light: "#000000"
-      }
-    });
-
   try {
     const templateData = {
       ticketId,
-      date: new Date(metadata.date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }),
-      venue: metadata.venue,
-      match: metadata.match,
-      qrcode: qrCodeDataURL,
-      year: new Date().getFullYear()
+      fullName,
+      eventName,
+      scanTime,
+      date,
+      venue,
+      seat,
+      quantity,
+      currentYear: new Date().getFullYear(),
     };
 
     const htmlContent = htmlCompiled(templateData);
@@ -66,14 +51,8 @@ const sendTicketConfirmation = async (
     const mailOptions = {
       from: `"M-seal Team" <${process.env.GMAIL_USER}>`,
       to: recipientEmail,
-      subject: `M-seal ticket for ${metadata.match}`,
+      subject: `✅ Your Murang'a Seal Ticket Has Been Validated ${eventName}`,
       html: htmlContent,
-      attachments: [{
-        filename: 'ticket-qr.png',
-        content: qrCodeDataURL.split('base64,')[1],
-        encoding: 'base64',
-        cid: 'ticketqr@mseal' // Content ID for embedding
-      }]
     };
 
     const info = await transporter.sendMail(mailOptions);
@@ -85,4 +64,4 @@ const sendTicketConfirmation = async (
   }
 };
 
-module.exports = sendTicketConfirmation;
+module.exports = sendTicketValidConfirmation;

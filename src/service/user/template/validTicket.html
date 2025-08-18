@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ticket Validation</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(135deg, #fae115, #000);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+      }
+      .content {
+        padding: 20px 30px;
+        color: #333333;
+      }
+      .content h2 {
+        font-size: 20px;
+        margin-bottom: 12px;
+        color: #212121;
+      }
+      .details {
+        margin: 20px 0;
+        border-collapse: collapse;
+        width: 100%;
+      }
+      .details td {
+        padding: 8px 6px;
+        border-bottom: 1px solid #eeeeee;
+      }
+      .footer {
+        background-color: #212121;
+        color: #eeeeee;
+        text-align: center;
+        font-size: 12px;
+        padding: 15px;
+      }
+      .highlight {
+        font-weight: bold;
+        color: #212121;
+      }
+      @media (max-width: 600px) {
+        .content {
+          padding: 15px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <img
+          src="https://res.cloudinary.com/dfuh1q6ic/image/upload/v1751304986/mseal-logo_dcsiqz.png"
+          alt="M-seal Logo"
+          class="logo"
+        />
+        <h1>✅ Ticket Validated Successfully</h1>
+      </div>
+      <div class="header"></div>
+
+      <!-- Content -->
+      <div class="content">
+        <h2>Hello {{fullName}},</h2>
+        <p>
+          Your ticket has been
+          <span class="highlight">successfully scanned and validated</span>
+          at the stadium gates. You are now cleared to enter.
+        </p>
+
+        <!-- Ticket Details -->
+        <table class="details">
+          <tr>
+            <td><strong>Event</strong></td>
+            <td>{{eventName}}</td>
+          </tr>
+          <tr>
+            <td><strong>Venue</strong></td>
+            <td>{{eventVenue}}</td>
+          </tr>
+          <tr>
+            <td><strong>Date</strong></td>
+            <td>{{date}}</td>
+          </tr>
+          <tr>
+            <td><strong>Scan Time</strong></td>
+            <td>{{scanTime}}</td>
+          </tr>
+          <tr>
+            <td><strong>Seat</strong></td>
+            <td>seat</td>
+          </tr>
+          <tr>
+            <td><strong>Quantity</strong></td>
+            <td>{{quantity}}</td>
+          </tr>
+          <tr>
+            <td><strong>Ticket ID</strong></td>
+            <td>{{ticketId}}</td>
+          </tr>
+        </table>
+
+        <p>
+          Please keep this email for reference. If you need assistance, visit
+          the help desk inside the stadium.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        &copy; {{currentYear}} Murang'a Seal FC. All Rights Reserved. <br />
+        This is an automated email — please do not reply.
+      </div>
+    </div>
+  </body>
+</html>
