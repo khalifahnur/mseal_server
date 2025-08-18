@@ -10,7 +10,7 @@ const eventSchema = new Schema({
 
 const ticketSchema = new Schema({
   ticketId: { type: String, required: true },
-  userId: { type: String, required: true },
+  userId: { type: Schema.Types.ObjectId,ref:"User",required: true,default: null },
   event: { type: [eventSchema], required: true },
   seat: { type: String },
   quantity: { type: Number, default: 1 },
