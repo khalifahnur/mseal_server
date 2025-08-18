@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 
 const Ticket = require("../../../model/ticket");
+const User = require("../../../model/user");
+
+const sendValidTicketEmail = require("../../../lib/queue/ticket/validTicketProducer");
 
 function truncateToDate(date: any) {
   const utcDate = new Date(
@@ -12,31 +15,23 @@ function truncateToDate(date: any) {
 const validateTicketById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const ticket = await Ticket.findById(id);
+
+    const ticket = await Ticket.findOneAndUpdate(
+      { _id: id, status: "valid" },
+      { $set: { status: "used" } },
+      { new: true }
+    ).populate("userId");
 
     if (!ticket) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Ticket is not valid." });
+      return res.status(400).json({
+        success: false,
+        message: "Ticket is not valid, expired, or has already been used.",
+      });
     }
 
-    if (ticket.status !== "valid") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Ticket is not valid or has been used.",
-        });
-    }
-
-    const eventDate = new Date(ticket.event[0].date);
-    const eventDateOnly = truncateToDate(eventDate);
-
-    const today = new Date();
-    const todayOnly = truncateToDate(today);
-
-    console.log("eventDateOnly:", eventDateOnly.toISOString());
-    console.log("todayOnly:", todayOnly.toISOString());
+    const event = ticket.event[0];
+    const eventDateOnly = truncateToDate(new Date(event.date));
+    const todayOnly = truncateToDate(new Date());
 
     if (eventDateOnly.getTime() !== todayOnly.getTime()) {
       return res.status(400).json({
@@ -45,13 +40,23 @@ const validateTicketById = async (req: Request, res: Response) => {
       });
     }
 
-    ticket.status = "used";
+    const user = ticket.userId as any;
 
-    await ticket.save();
+    await sendValidTicketEmail("email_valid_ticket_confirmation", {
+      ticketId: ticket.ticketId,
+      recipientEmail: user.email,
+      fullName: `${user.firstName} ${user.lastName}`,
+      eventName: event.match,
+      venue: event.venue,
+      seat: ticket.seat,
+      quantity: ticket.quantity,
+      scanTime: new Date().toISOString(),
+      date: event.date,
+    });
 
     return res.status(200).json({
       success: true,
-      message: `This ticket allows entry for ${ticket.quantity} individual's`,
+      message: `Ticket validated for ${ticket.quantity} individual(s). Entry granted.`,
     });
   } catch (error) {
     console.error("Error validating ticket:", error);
