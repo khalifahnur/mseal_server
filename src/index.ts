@@ -21,6 +21,7 @@ const consumeTicketEmailQueue = require("./lib/queue/ticket/consumer");
 const consumerSignInEmailQueue = require("./lib/queue/auth/signin/consumer");
 const consumerSignUpEmailQueue = require("./lib/queue/auth/signup/consumer");
 const consumerForgotEmailQueue = require("./lib/queue/auth/forgotPsswd/consumer");
+const consmuerValidTicketEmailueue = require("./lib/queue/ticket/validTicketConsumer")
 
 require("./lib/passport-config");
 
@@ -132,6 +133,9 @@ consumerSignUpEmailQueue().catch(({ err }: any) => {
 });
 consumerForgotEmailQueue().catch(({err}:any) => {
   console.error("Failed to start (forgot psswd)",err);
+})
+consmuerValidTicketEmailueue().catch(({err}:any)=>{
+  console.log("Failed to start (valid_ticket)",err)
 })
 setupWebSocket(io)
 setupMembershipWebSocket(io)
