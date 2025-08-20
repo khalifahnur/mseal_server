@@ -10,17 +10,16 @@ const rabbitMQUrl =
 //    "amqp://guest:guest@localhost:5672";
 const queue = "email_valid_ticket_confirmation";
 
-
 interface QueueMessage {
   ticketId: string;
   recipientEmail: string;
   fullName?: string;
-  eventName?:string;
-  scanTime?:any;
-  date?:any;
-  venue?:string;
-  seat?:string;
-  quantity?:any;
+  eventName?: string;
+  scanTime?: any;
+  date?: any;
+  venue?: string;
+  seat?: string;
+  quantity?: any;
 }
 
 const consumeEmailQueue = async () => {
@@ -54,9 +53,17 @@ const consumeEmailQueue = async () => {
               throw new Error("Invalid message format");
             }
 
-            await sendTicketConfirmation(
-              data
-            );
+            await sendTicketConfirmation({
+              ticketId: data.ticketId,
+              recipientEmail: data.recipientEmail,
+              fullName: data.fullName,
+              eventName: data.eventName,
+              scanTime: data.scanTime,
+              date: data.date,
+              venue: data.venue,
+              seat: data.seat,
+              quantity: data.quantity,
+            });
             channel.ack(msg);
           } catch (err) {
             console.error("Email consumer error (ticket):", err);
