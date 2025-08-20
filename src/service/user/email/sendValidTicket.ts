@@ -5,6 +5,18 @@ import Handlebars from "handlebars";
 
 require("dotenv").config();
 
+interface TicketEmail {
+  ticketId: string;
+  recipientEmail: string;
+  fullName?: string;
+  eventName?: string;
+  scanTime?: any;
+  date?: any;
+  venue?: string;
+  seat?: string;
+  quantity?: any;
+}
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   port: 587,
@@ -22,27 +34,10 @@ const htmlTemplate = fs.readFileSync(
 
 const htmlCompiled = Handlebars.compile(htmlTemplate);
 
-const sendTicketValidConfirmation = async (
-  ticketId: string,
-  recipientEmail: string,
-  fullName?: string,
-  eventName?: string,
-  scanTime?: any,
-  date?: any,
-  venue?: string,
-  seat?: string,
-  quantity?: any
-) => {
+const sendTicketValidConfirmation = async (data:TicketEmail) => {
   try {
     const templateData = {
-      ticketId,
-      fullName,
-      eventName,
-      scanTime,
-      date,
-      venue,
-      seat,
-      quantity,
+      ...data,
       currentYear: new Date().getFullYear(),
     };
 
@@ -50,8 +45,8 @@ const sendTicketValidConfirmation = async (
 
     const mailOptions = {
       from: `"M-seal Team" <${process.env.GMAIL_USER}>`,
-      to: recipientEmail,
-      subject: `✅ Your Murang'a Seal Ticket Has Been Validated ${eventName}`,
+      to: data.recipientEmail,
+      subject: `✅ Your Murang'a Seal Ticket Has Been Validated ${data.eventName}`,
       html: htmlContent,
     };
 
