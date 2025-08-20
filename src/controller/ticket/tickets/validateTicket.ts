@@ -40,7 +40,7 @@ const validateTicketById = async (req: Request, res: Response) => {
       });
     }
 
-    const user = ticket.userId as any;
+    const user = User.userId as any;
 
     await sendValidTicketEmail("email_valid_ticket_confirmation", {
       ticketId: ticket.ticketId,
