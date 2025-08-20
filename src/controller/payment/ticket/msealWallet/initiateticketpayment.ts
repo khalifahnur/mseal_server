@@ -20,7 +20,7 @@ const handleMsealWalletTicket = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
-  const { eventId, match, date, venue, quantity, amount } = req.body;
+  const { eventId, match, date, venue, quantity, amount, time } = req.body;
   const totalAmount = amount * quantity;
   const userId = req.user?.id;
 
@@ -31,7 +31,8 @@ const handleMsealWalletTicket = async (
     !date ||
     !venue ||
     !quantity ||
-    !amount
+    !amount ||
+    !time
   ) {
     return res.status(400).json({ error: "Missing required fields" });
   }
@@ -89,6 +90,7 @@ const handleMsealWalletTicket = async (
             match,
             date,
             venue,
+            time
           },
           paymentStatus: "Pending",
         });
@@ -124,7 +126,7 @@ const handleMsealWalletTicket = async (
           match,
           date,
           venue,
-          quantity,
+          quantity
         },
       });
 
