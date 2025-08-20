@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 const Ticket = require("../../../model/ticket");
 const encryptQr = require("../../../lib/encryptedQr");
+const Event = require("../../../model/event")
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -14,7 +15,7 @@ const getValidTickets = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const tickets = await Ticket.find({ userId, status: "valid" })
       .sort({ createdAt: -1 })
-      .lean();
+      .lean();     
 
     const minimalTicketData = tickets
       .map((ticket: any) => ({

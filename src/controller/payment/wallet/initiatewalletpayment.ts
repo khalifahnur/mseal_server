@@ -50,6 +50,10 @@ const initiatewalletpayment = async (
       return res.status(400).json({ error: "wallet not found" });
     }
 
+    if (amount < 0 && wallet.balance + amount < 0) {
+      throw new Error("Insufficient funds");
+    }
+
     const response = await axios.post(
       "https://api.paystack.co/charge",
       {

@@ -6,6 +6,7 @@ const eventSchema = new Schema({
   match: { type: String, required: true },
   date: { type: Date, required: true },
   venue: { type: String, required: true },
+  time: {type:String, required: true}
 });
 
 const ticketSchema = new Schema({

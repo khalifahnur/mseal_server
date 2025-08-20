@@ -20,7 +20,7 @@ const initiateTicketPayment = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
-  const { eventId, match, date, venue, quantity, amount } = req.body;
+  const { eventId, match, date, venue, quantity, amount, time } = req.body;
 
   const userId = req.user?.id;
 
@@ -93,6 +93,7 @@ const initiateTicketPayment = async (
         date,
         venue,
         match,
+        time,
       },
       paymentStatus: "Pending",
     });

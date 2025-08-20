@@ -28,7 +28,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const htmlTemplate = fs.readFileSync(
-  path.join(__dirname, "..", "template", "ticket.html"),
+  path.join(__dirname, "..", "template", "validTicket.html"),
   "utf8"
 );
 
