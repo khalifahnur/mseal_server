@@ -46,6 +46,7 @@ const getUserInfo = async (req: AuthenticatedRequest, res: Response) => {
       qrcode,
       balance: walletInfo?.balance ?? 0,
       walletId: walletInfo?._id ?? null,
+      walletStatus: walletInfo?.status
     };
 
     return res.status(200).json(responseData);

@@ -83,7 +83,7 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
 
         let membership = existingMembership;
         const expDate = new Date();
-        expDate.setMonth(expDate.getMonth() + 1);
+        expDate.setMonth(expDate.getFullYear() + 1);
         membership.expDate = expDate;
         membership.status = "Active";
         membership.paymentStatus = "Completed";
@@ -100,6 +100,7 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
             balance: 0,
             status: "Active",
             paymentStatus: "Completed",
+            expDate,
           });
           await wallet.save({ session });
           await User.findByIdAndUpdate(
