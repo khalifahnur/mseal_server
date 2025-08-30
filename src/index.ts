@@ -101,22 +101,8 @@ mongoose
     console.log("MongoDB connection Error", error);
   });
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000,
-    },
-  })
-);
-
 const redisClient = createClient({
-  url: process.env.REDIS_URL || "redis://redis:6379",
+  url: process.env.REDIS_URL,
 });
 
 redisClient.on("error", (err) => console.error("Redis Client Error", err));
@@ -125,7 +111,7 @@ redisClient.connect();
 app.use(
   session({
     store: new RedisStore({ client: redisClient }),
-    secret: process.env.SESSION_SECRET || "supersecret",
+    secret: process.env.SESSION_SECRET || "",
     resave: false,
     saveUninitialized: false,
     cookie: {

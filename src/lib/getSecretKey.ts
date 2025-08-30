@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 //const redis = new Redis();
-const redis = new Redis(process.env.REDIS_URL || 'redis://redis:6379' );
+const redis = new Redis(process.env.REDIS_URL! );
 
 
 const getSecretKey = async (userId:string) => {

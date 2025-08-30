@@ -2,7 +2,7 @@ import Redis from "ioredis";
 import generateSecretKey from "./generateSecretKey";
 
 // const redis = new Redis();
-const redis = new Redis(process.env.REDIS_URL || 'redis://redis:6379' );
+const redis = new Redis(process.env.REDIS_URL! );
 
 
 const newSecretKey = async (userId: string) => {
