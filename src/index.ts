@@ -74,14 +74,20 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "5mb" }));
 app.use(bodyParser.json({ limit: "1mb" }));
 
 
-
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use(limiter);
+
+app.use((req, res, next) => {
+  if (req.path.startsWith("/mseal/ticket/validate-ticket")) {
+    return next();
+  }
+  return limiter(req, res, next);
+});
+
 
 mongoose
   .connect(MongodbConn, { maxPoolSize: 10 })
