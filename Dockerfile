@@ -1,7 +1,7 @@
-FROM node:18-alpine
+FROM node:24-alpine
 
 # Install Redis
-RUN apk add --no-cache redis
+# RUN apk add --no-cache redis
 
 # Set working directory
 WORKDIR /app/server
@@ -30,9 +30,10 @@ RUN mkdir -p dist/service/staff/template dist/service/user/template && \
     cp -r src/service/user/template/* dist/service/user/template/
 
 # Expose necessary ports
-EXPOSE 3000 3002 9092 2181 6379
+EXPOSE 3000 3002 9092 2181
 
 
 # Start Redis server and then Node.js app
-CMD redis-server --daemonize yes && node dist/index.js
+# CMD redis-server --daemonize yes && node dist/index.js
+CMD node dist/index.js
 

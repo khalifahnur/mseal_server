@@ -9,6 +9,9 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 import session from "express-session";
+import {RedisStore} from "connect-redis";
+import { createClient } from "redis";
+
 import { Server } from "socket.io";
 import setupWebSocket from "./socket/orderConfirmPayment";
 import setupMembershipWebSocket from "./socket/membershipConfirmPayment";
@@ -108,6 +111,28 @@ app.use(
       httpOnly: true,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
+    },
+  })
+);
+
+const redisClient = createClient({
+  url: process.env.REDIS_URL || "redis://redis:6379",
+});
+
+redisClient.on("error", (err) => console.error("Redis Client Error", err));
+redisClient.connect();
+
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    secret: process.env.SESSION_SECRET || "supersecret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000, 
     },
   })
 );
