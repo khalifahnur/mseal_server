@@ -48,8 +48,10 @@ const getMemberInfo = async (req: AuthenticatedRequest, res: Response) => {
             : null,
           ecryptWalletId: user._id ? encryptWallet(user._id.toString()) : null,
           cardNumber: walletInfo?._id || null,
-          physicalIdIssued: user.physicalIdIssued,
+          //physicalIdIssued: user.physicalIdIssued,
           lockRequested: user.lockRequested,
+          physicalNfcGiven:walletInfo?.physicalNfcGiven || null,
+          cardStatus:walletInfo?.status
         };
       })
     );

@@ -13,6 +13,7 @@ const getUsersMerchandise = async (req: Request, res: Response) => {
       price: item.price,
       category: item.category,
       imgUrl: item.imageUrl,
+      stock:item.stock
     }));
 
     res.status(200).json({

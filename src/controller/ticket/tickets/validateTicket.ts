@@ -42,8 +42,6 @@ const validateTicketById = async (req: Request, res: Response) => {
 
     const user = await User.findById(ticket.userId);
 
-    console.log(user)
-
     await sendValidTicketEmail("email_valid_ticket_confirmation", {
       ticketId: ticket.ticketId,
       recipientEmail: user.email,

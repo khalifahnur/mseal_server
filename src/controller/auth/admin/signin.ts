@@ -1,27 +1,21 @@
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
-import { verifyPassword } from "../../../lib/hashPassword";
 import getSecretKey from "../../../lib/getSecretKey";
 
-//const sendSigninEmail = require('../../../services/email')
 const Admin = require("../../../model/admin");
 
 const loginAdmin = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email } = req.body;
 
     const admin = await Admin.findOne({ email });
 
     if (!admin) {
-      return res.status(401).json({ message: "Incorrect Email/Password" });
+      return res.status(401).json({ message: "Account not found." });
     }
 
-    //const isPasswordMatch = await bcrypt.compare(password, user.password);
-    const isPasswordMatch = verifyPassword(admin.password, password);
-
-    if (!isPasswordMatch) {
-      return res.status(401).json({ message: "Incorrect Email/Password" });
-    }
+    admin.verificationCode = null;
+    admin.verificationCodeExpiration = null;
 
     const secretKey = await getSecretKey(admin._id.toString());
 
@@ -41,8 +35,6 @@ const loginAdmin = async (req: Request, res: Response) => {
       })
       .status(200)
       .json({ message: "Login successful" });
-    // Send email
-    //await sendSigninEmail(email);
 
   } catch (error) {
     res.status(500).json({ message: "Error occurred during login" });

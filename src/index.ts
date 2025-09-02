@@ -24,7 +24,8 @@ const consumeTicketEmailQueue = require("./lib/queue/ticket/consumer");
 const consumerSignInEmailQueue = require("./lib/queue/auth/signin/consumer");
 const consumerSignUpEmailQueue = require("./lib/queue/auth/signup/consumer");
 const consumerForgotEmailQueue = require("./lib/queue/auth/forgotPsswd/consumer");
-const consmuerValidTicketEmailueue = require("./lib/queue/ticket/validTicketConsumer")
+const consmuerValidTicketEmailueue = require("./lib/queue/ticket/validTicketConsumer");
+const consumerAdminSignInEmailQueue = require("./lib/queue/auth/verifyAdmin/consumer")
 
 require("./lib/passport-config");
 
@@ -37,6 +38,7 @@ const merchandiserouter = require("./router/merchandise/merchandise");
 const adminrouter = require("./router/admin/adminrouter");
 const staffrouter = require("./router/staff/staffrouter");
 const transactionrouter = require("./router/transaction/transactionrouter");
+const orderrouter = require("./router/order/orderrouter");
 
 dotenv.config();
 
@@ -102,7 +104,8 @@ mongoose
   });
 
 const redisClient = createClient({
-  url: process.env.REDIS_URL,
+  //url: process.env.REDIS_URL,
+  url:'redis://localhost:6379',
 });
 
 redisClient.on("error", (err) => console.error("Redis Client Error", err));
@@ -135,6 +138,7 @@ app.use("/mseal/merchandise", merchandiserouter);
 app.use("/mseal/auth-admin", adminrouter);
 app.use("/mseal/staff-auth", staffrouter);
 app.use("/mseal/transaction", transactionrouter);
+app.use("/mseal/order", orderrouter);
 
 consumeOrderEmailQueue().catch(({ err }: any) => {
   console.error("Failed to start (order) email consumer:", err);
@@ -154,6 +158,10 @@ consumerForgotEmailQueue().catch(({err}:any) => {
 consmuerValidTicketEmailueue().catch(({err}:any)=>{
   console.log("Failed to start (valid_ticket)",err)
 })
+consumerAdminSignInEmailQueue().catch(({err}:any)=>{
+  console.log("Failed to start (admin_verification)",err)
+});
+
 setupWebSocket(io)
 setupMembershipWebSocket(io)
 setupWalletWebSocket(io)
