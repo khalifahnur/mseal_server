@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-
 const Event = require("../../../model/event");
 
 const getUpcomingEvents = async (req: Request, res: Response) => {
   try {
-    const todayDate = new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     const events = await Event.find({
-      date: { $gt: todayDate },
+      date: { $gte: today },
     })
       .sort({ date: 1 })
       .limit(5)

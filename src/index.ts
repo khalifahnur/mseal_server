@@ -46,6 +46,7 @@ const app = express();
 const server = http.createServer(app);
 
 app.set('trust proxy', true);
+app.disable('x-powered-by');
 
 const port = process.env.PORT || 3002;
 const MongodbConn = process.env.MONGODB_CONN || "";
@@ -54,8 +55,6 @@ const corsOptions = {
   origin: [
     "https://mseal-membership.vercel.app",
     "https://mseal-master.vercel.app",
-    "http://localhost:3000",
-    "http://localhost:5672",
   ], // local testing => "http://localhost:3001"
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
