@@ -46,7 +46,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 app.disable('x-powered-by');
 
 const port = process.env.PORT || 3002;
@@ -56,6 +56,7 @@ const corsOptions = {
   origin: [
     "https://mseal-membership.vercel.app",
     "https://mseal-master.vercel.app",
+    "http://localhost:3000"
   ], // local testing => "http://localhost:3001"
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
@@ -106,8 +107,8 @@ mongoose
   });
 
 const redisClient = createClient({
-  url: process.env.REDIS_URL,
-  //url:'redis://localhost:6379',
+  //url: process.env.REDIS_URL,
+  url:'redis://localhost:6379',
 });
 
 redisClient.on("error", (err) => console.error("Redis Client Error", err));
