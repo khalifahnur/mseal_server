@@ -28,6 +28,7 @@ const consmuerValidTicketEmailueue = require("./lib/queue/ticket/validTicketCons
 const consumerAdminSignInEmailQueue = require("./lib/queue/auth/verifyAdmin/consumer")
 
 require("./lib/passport-config");
+const startCronJob = require("./controller/ticket/tickets/updateStatus");
 
 const userrouter = require("./router/user/userrouter");
 const membershiprouter = require("./router/membership/membershiprouter");
@@ -96,7 +97,9 @@ app.use((req, res, next) => {
 mongoose
   .connect(MongodbConn, { maxPoolSize: 10 })
   .then(() => {
+    startCronJob();
     console.log("MongoDB successfully connected");
+    
   })
   .catch((error) => {
     console.log("MongoDB connection Error", error);
