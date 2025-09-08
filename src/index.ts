@@ -56,7 +56,6 @@ const corsOptions = {
   origin: [
     "https://mseal-membership.vercel.app",
     "https://mseal-master.vercel.app",
-    "http://localhost:3000"
   ], // local testing => "http://localhost:3001"
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
