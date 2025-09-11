@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 const User = require("../../../model/user");
 const Order = require("../../../model/order");
+const Merchandise = require("../../../model/merchandise");
 const generateOrderId = require("../../../lib/generateOrderId");
 
 dotenv.config();
@@ -47,6 +48,16 @@ const initiateorderpayment = async (
       return res.status(400).json({ error: "User phone number is required" });
     }
 
+    for (const item of items) {
+  const product = await Merchandise.findById(item.productId);
+  if (!product) {
+    return res.status(400).json({ error: `Product ${item.productId} not found` });
+  }
+  if (product.stock < item.quantity) {
+    return res.status(400).json({ error: `Insufficient stock for product ${item.productId}` });
+  }
+}
+
     const response = await axios.post(
       "https://api.paystack.co/charge",
       {
@@ -67,7 +78,9 @@ const initiateorderpayment = async (
         headers: {
           Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
           "Content-Type": "application/json",
+          
         },
+        timeout: 10000,
       }
     );
 

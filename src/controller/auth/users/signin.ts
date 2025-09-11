@@ -82,7 +82,7 @@ const loginUser = async (req: Request, res: Response) => {
         //domain: 'server-production-2ee7.up.railway.app',
         path: "/",
         maxAge: 24 * 60 * 60 * 1000,
-        partitioned:true
+        //partitioned:true
       })
       .status(200)
       .json({ message: "Login successful" });

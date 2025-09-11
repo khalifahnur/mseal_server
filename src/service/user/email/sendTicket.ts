@@ -72,7 +72,7 @@ const sendTicketConfirmation = async (
         filename: 'ticket-qr.png',
         content: qrCodeDataURL.split('base64,')[1],
         encoding: 'base64',
-        cid: 'ticketqr@mseal' // Content ID for embedding
+        cid: 'ticketqr@mseal'
       }]
     };
 
