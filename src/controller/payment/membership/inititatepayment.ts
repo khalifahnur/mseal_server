@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const PAYSTACK_SECRET_KEY = process.env.MSEAL_MEMBERSHIP_PAYSTACK_KEY || "";
+//const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
+
 const Membership = require("../../../model/membership");
 const limits = require("./checkTier");
 

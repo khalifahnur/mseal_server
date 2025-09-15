@@ -40,7 +40,7 @@ const signUpUser = async (req: Request, res: Response) => {
 
     await newUser.save();
     try {
-      const registrationDate = format(new Date(), "yyyy-MM-dd");
+      const registrationDate = format(newUser.createdAt, "MMMM d, yyyy");
       await publishToSignUpQueue("email_signup", {
         firstName,
         registrationDate,

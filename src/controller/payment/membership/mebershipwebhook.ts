@@ -13,6 +13,7 @@ const publishToQueue = require("../../../lib/queue/membership/producer");
 dotenv.config();
 
 const PAYSTACK_SECRET = process.env.MSEAL_MEMBERSHIP_PAYSTACK_KEY || "";
+// const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
 
 interface PaystackEvent {
   event: string;
@@ -103,6 +104,7 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
             balance: 0,
             status: "Active",
             paymentStatus: "Completed",
+            prepaidReference: reference || undefined,
           });
           await wallet.save({ session });
           await User.findByIdAndUpdate(
@@ -112,7 +114,6 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
           );
         }
 
-        // transaction
         const transaction = new Transaction({
           userId: metadata.userId,
           transactionType: "membership",
