@@ -16,7 +16,7 @@ const walletSchema = new Schema(
       enum: ["Pending", "Completed", "Failed"],
       default: "Pending",
     },
-    prepaidReference: { type: String, unique: true, default: "" },
+    prepaidReference: { type: String, unique: true, sparse: true },
     expDate: { type: Date },
     physicalNfcGiven: { type: Boolean, default: false },
   },

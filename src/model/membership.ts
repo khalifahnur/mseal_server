@@ -25,7 +25,7 @@ const membershipSchema = new Schema(
     dob: { type: String, required: true },
     physicalAddress: { type: String, required: true },
     city: { type: String, required: true },
-    reference: { type: String, unique: true },
+    reference: { type: String, unique: true, sparse: true },
     expDate: { type: Date },
   },
   { timestamps: true }
