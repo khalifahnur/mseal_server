@@ -6,6 +6,7 @@ dotenv.config();
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
 const Membership = require("../../../model/membership");
+const limits = require("./checkTier");
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -31,6 +32,19 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
 
   if (!userId) {
     return res.status(400).json({ error: "User ID is required" });
+  }
+
+  const count = await Membership.countDocuments({
+    membershipTier,
+    paymentStatus: "Completed",
+  });
+  
+  if (count >= limits[membershipTier]) {
+    return res
+      .status(400)
+      .json({
+        error: `${membershipTier} tier is full, please select another.`,
+      });
   }
 
   try {
@@ -83,12 +97,10 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
       "Error initiating payment:",
       error.response?.data || error.message
     );
-    res
-      .status(500)
-      .json({
-        error: "Failed to initiate payment",
-        details: error.response?.data || error.message,
-      });
+    res.status(500).json({
+      error: "Failed to initiate payment",
+      details: error.response?.data || error.message,
+    });
   }
 };
 

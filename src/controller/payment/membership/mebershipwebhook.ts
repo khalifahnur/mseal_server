@@ -77,14 +77,17 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
 
         // Fetch user
         const user = await User.findById(metadata.userId).session(session);
+
         if (!user) {
           throw new Error("User not found");
         }
 
         let membership = existingMembership;
+
         const expDate = new Date();
-        expDate.setMonth(expDate.getFullYear() + 1);
+        expDate.setFullYear(expDate.getFullYear() + 1);
         membership.expDate = expDate;
+
         membership.status = "Active";
         membership.paymentStatus = "Completed";
         membership.updatedAt = new Date();
@@ -100,7 +103,6 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
             balance: 0,
             status: "Active",
             paymentStatus: "Completed",
-            expDate,
           });
           await wallet.save({ session });
           await User.findByIdAndUpdate(

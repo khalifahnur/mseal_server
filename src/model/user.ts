@@ -6,13 +6,12 @@ const userSchema = new Schema({
   lastName: { type: String, require: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: false },
-  phoneNumber: { type: String, required: false },
+  phoneNumber: { type: String, required: false,unique:true },
   membershipId: { type: Schema.Types.ObjectId, ref: 'Membership', default: null},
   walletId: { type: Schema.Types.ObjectId, ref: 'Wallet', default: null},
-  createdAt: { type: Date, default: Date.now },
   verificationCode: { type: String },
   verificationCodeExpiration: { type: Date },
-});
+},{timestamps:true});
 
 userSchema.index({email:1,phoneNumber:1,membershipId:1});
 
