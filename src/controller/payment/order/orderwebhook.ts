@@ -11,7 +11,7 @@ const publishToQueue = require("../../../lib/queue/order_email/producer");
 
 dotenv.config();
 
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET = process.env.MSEAL_MERCH_PAYSTACK_KEY || "";
 
 const handlePaystackWebhook = async (req: Request, res: Response) => {
   const hash = crypto

@@ -50,7 +50,7 @@ const getMemberInfo = async (req: AuthenticatedRequest, res: Response) => {
           cardNumber: walletInfo?._id || null,
           //physicalIdIssued: user.physicalIdIssued,
           lockRequested: user.lockRequested,
-          physicalNfcGiven:walletInfo?.physicalNfcGiven || null,
+          physicalNfcGiven: walletInfo?.physicalNfcGiven ?? false,
           cardStatus:walletInfo?.status
         };
       })

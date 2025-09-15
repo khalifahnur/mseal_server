@@ -1,4 +1,5 @@
 import express from "express";
+import { authenticate } from "passport";
 
 const router = express.Router();
 
@@ -11,6 +12,7 @@ const FetchAllStaff = require("../../controller/auth/admin/fetchStaff");
 const RemoveStaffAccount = require("../../controller/auth/admin/removeStaff");
 const FetchMembershipInfo = require("../../controller/auth/admin/fetchMemberInfo");
 const VerifyEmail = require("../../controller/auth/admin/verifyEmail");
+const updatePhysicalNfcGiven = require("../../controller/wallet/physicalCardGiven");
 
 const authenticateAdmin = require("../../middleware/adminMiddleware");
 
@@ -24,5 +26,6 @@ router.post("/Staff/app-signup", authenticateAdmin, StaffSignUp);
 router.get("/fetch-all-staff-details",authenticateAdmin,FetchAllStaff)
 router.post("/remove-staff-account",authenticateAdmin,RemoveStaffAccount)
 router.get("/fetch-membership-info",authenticateAdmin,FetchMembershipInfo)
+router.put("/update-physical-nfc-given/:walletId",authenticateAdmin,updatePhysicalNfcGiven)
 
 module.exports = router;

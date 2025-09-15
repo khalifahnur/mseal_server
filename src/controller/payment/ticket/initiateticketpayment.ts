@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET_KEY = process.env.MSEAL_MATCH_PAYSTACK_KEY || "";
 
 const User = require("../../../model/user");
 const Ticket = require("../../../model/ticket");

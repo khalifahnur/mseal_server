@@ -12,7 +12,7 @@ const publishToQueue = require("../../../lib/queue/membership/producer");
 
 dotenv.config();
 
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET = process.env.MSEAL_MEMBERSHIP_PAYSTACK_KEY || "";
 
 interface PaystackEvent {
   event: string;

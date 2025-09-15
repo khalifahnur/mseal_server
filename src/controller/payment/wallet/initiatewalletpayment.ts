@@ -7,7 +7,7 @@ const Wallet = require("../../../model/wallet");
 
 dotenv.config();
 
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET_KEY = process.env.MSEAL_WALLET_PAYSTACK_KEY || "";
 
 interface AuthenticatedRequest extends Request {
   user?: {
