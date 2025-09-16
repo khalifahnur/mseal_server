@@ -4,7 +4,7 @@ const { Schema, model } = mongoose;
 const merchandiseSchema = new Schema(
   {
     adminId: { type: String, required: true },
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique:true },
     description: { type: String, required: false },
     price: { type: Number, required: true },
     stock: { type: Number, required: true },
