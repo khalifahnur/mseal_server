@@ -31,11 +31,7 @@ const sendSIgnUp = async (data: {
     const templateData = {
       firstName: data.firstName,
       email: data.email,
-      registrationDate: data.registrationDate.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
+      registrationDate: data.registrationDate,
       year: new Date().getFullYear(),
     };
 
@@ -53,7 +49,7 @@ const sendSIgnUp = async (data: {
     return info;
   } catch (error: any) {
     console.error("Error sending email:", error);
-    throw new Error(`Failed to send ticket confirmation: ${error.message}`);
+    throw new Error(`Failed to send sign_up confirmation: ${error.message}`);
   }
 };
 

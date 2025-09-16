@@ -30,12 +30,17 @@ const signUpUser = async (req: Request, res: Response) => {
 
     const newPhoneNumber = `+254${phoneNumber}`;
 
+    const existingPhone = await User.findOne({ phoneNumber: newPhoneNumber });
+    if (existingPhone) {
+      return res.status(401).json({ message: "Phone number already in use" });
+    }
+    
     const newUser = new User({
       firstName,
       lastName,
       email,
       password: hashedPassword,
-      phoneNumber:newPhoneNumber,
+      phoneNumber: newPhoneNumber,
     });
 
     await newUser.save();
