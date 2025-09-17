@@ -1,3 +1,4 @@
+import { required } from "joi";
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
@@ -22,8 +23,7 @@ const membershipSchema = new Schema(
       enum: ["Pending", "Completed", "Failed"],
       default: "Pending",
     },
-    dob: { type: String, required: true },
-    physicalAddress: { type: String, required: true },
+    dob: { type: String, required: false },
     city: { type: String, required: true },
     reference: { type: String, unique: true, sparse: true },
     expDate: { type: Date },
