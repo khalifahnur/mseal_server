@@ -37,7 +37,7 @@ const handlePaystackWebhook = async (req, res) => {
             await session.withTransaction(async () => {
                 const verifyResponse = await axios_1.default.get(`https://api.paystack.co/transaction/verify/${reference}`, {
                     headers: {
-                        Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+                        Authorization: `Bearer ${PAYSTACK_SECRET}`,
                     },
                 });
                 if (verifyResponse.data.data.status !== "success") {

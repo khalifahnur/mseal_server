@@ -46,7 +46,7 @@ const handleWalletPaystackWebhook = async (req: Request, res: Response) => {
           `https://api.paystack.co/transaction/verify/${reference}`,
           {
             headers: {
-              Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+              Authorization: `Bearer ${PAYSTACK_SECRET}`,
             },
           }
         );
