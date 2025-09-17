@@ -11,6 +11,7 @@ const getUsersMerchandise = async (req, res) => {
             price: item.price,
             category: item.category,
             imgUrl: item.imageUrl,
+            stock: item.stock
         }));
         res.status(200).json({
             message: "Merchandise retrieved successfully",

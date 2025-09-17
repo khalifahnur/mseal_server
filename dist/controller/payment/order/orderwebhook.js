@@ -12,7 +12,7 @@ const Merchandise = require("../../../model/merchandise");
 const Transaction = require("../../../model/transaction");
 const publishToQueue = require("../../../lib/queue/order_email/producer");
 dotenv_1.default.config();
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET = process.env.MSEAL_MERCH_PAYSTACK_KEY || "";
 const handlePaystackWebhook = async (req, res) => {
     const hash = crypto_1.default
         .createHmac("sha512", PAYSTACK_SECRET)
@@ -73,7 +73,7 @@ const handlePaystackWebhook = async (req, res) => {
                 order.paymentStatus = "Completed";
                 order.updatedAt = new Date();
                 await order.save({ session });
-                // console.log(order);
+                console.log("metadata", metadata);
                 await publishToQueue("email_order_confirmation", {
                     orderId: order._id,
                     email: customer.email,

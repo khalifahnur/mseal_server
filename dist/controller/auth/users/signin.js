@@ -64,12 +64,13 @@ const loginUser = async (req, res) => {
         return res
             .cookie("user_auth", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // Only secure in production
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // 'lax' for local
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             //sameSite: 'none',
             //domain: 'server-production-2ee7.up.railway.app',
             path: "/",
             maxAge: 24 * 60 * 60 * 1000,
+            //partitioned:true
         })
             .status(200)
             .json({ message: "Login successful" });

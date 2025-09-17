@@ -7,9 +7,9 @@ const amqplib_1 = __importDefault(require("amqplib"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const sendResetCode = require("../../../../service/user/email/sendForgotPsswd");
 dotenv_1.default.config();
-const rabbitMQUrl = process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
 // const rabbitMQUrl =
-//    "amqp://guest:guest@localhost:5672";
+//   process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
+const rabbitMQUrl = "amqp://guest:guest@localhost:5672";
 const queue = "reset_code";
 const consumeEmailQueue = async () => {
     let connection;

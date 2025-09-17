@@ -3,9 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Event = require("../../../model/event");
 const getUpcomingEvents = async (req, res) => {
     try {
-        const todayDate = new Date();
+        const today = new Date();
+        today.setUTCHours(0, 0, 0, 0);
         const events = await Event.find({
-            date: { $gt: todayDate },
+            date: { $gte: today },
         })
             .sort({ date: 1 })
             .limit(5)

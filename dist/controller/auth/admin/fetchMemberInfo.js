@@ -32,8 +32,10 @@ const getMemberInfo = async (req, res) => {
                     : null,
                 ecryptWalletId: user._id ? encryptWallet(user._id.toString()) : null,
                 cardNumber: walletInfo?._id || null,
-                physicalIdIssued: user.physicalIdIssued,
+                //physicalIdIssued: user.physicalIdIssued,
                 lockRequested: user.lockRequested,
+                physicalNfcGiven: walletInfo?.physicalNfcGiven ?? false,
+                cardStatus: walletInfo?.status
             };
         }));
         return res.status(200).json(responseData);

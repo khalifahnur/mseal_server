@@ -16,6 +16,10 @@ const createMerchandise = async (req, res) => {
         if (!name || !price || !stock || !category || !imageUrl) {
             return res.status(400).json({ message: "All fields are required" });
         }
+        const existingItem = await Merchandise.findOne({ name });
+        if (existingItem) {
+            return res.status(401).json({ message: "Item already exists" });
+        }
         // Create new merchandise with an object containing all fields
         const item = new Merchandise({
             adminId,

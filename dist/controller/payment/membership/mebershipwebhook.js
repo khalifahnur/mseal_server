@@ -13,7 +13,7 @@ const Transaction = require("../../../model/transaction");
 const Wallet = require("../../../model/wallet");
 const publishToQueue = require("../../../lib/queue/membership/producer");
 dotenv_1.default.config();
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET = process.env.MSEAL_MEMBERSHIP_PAYSTACK_KEY || "";
 const handlePaystackMembershipWebhook = async (req, res) => {
     // Verify Paystack signature
     const hash = crypto_1.default
@@ -52,7 +52,7 @@ const handlePaystackMembershipWebhook = async (req, res) => {
                 }
                 let membership = existingMembership;
                 const expDate = new Date();
-                expDate.setMonth(expDate.getMonth() + 1);
+                expDate.setFullYear(expDate.getFullYear() + 1);
                 membership.expDate = expDate;
                 membership.status = "Active";
                 membership.paymentStatus = "Completed";
@@ -66,11 +66,11 @@ const handlePaystackMembershipWebhook = async (req, res) => {
                         balance: 0,
                         status: "Active",
                         paymentStatus: "Completed",
+                        prepaidReference: reference || undefined,
                     });
                     await wallet.save({ session });
                     await User.findByIdAndUpdate(metadata.userId, { walletId: wallet._id }, { session });
                 }
-                // transaction
                 const transaction = new Transaction({
                     userId: metadata.userId,
                     transactionType: "membership",

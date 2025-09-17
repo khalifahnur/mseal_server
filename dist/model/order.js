@@ -11,6 +11,10 @@ const orderSchema = new mongoose_1.default.Schema({
             productId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Merchandise' },
             quantity: { type: Number, required: true },
             price: { type: Number, required: true },
+            customization: {
+                type: mongoose_1.default.Schema.Types.Mixed,
+                required: false,
+            },
         },
     ],
     totalAmount: { type: Number, required: true },
@@ -24,17 +28,18 @@ const orderSchema = new mongoose_1.default.Schema({
         enum: ['Pending', 'Completed', 'Failed'],
         default: 'Pending',
     },
-    transactionReference: { type: String },
+    transactionReference: { type: String, require: true },
     shippingAddress: {
         street: String,
         city: String,
         country: String,
         postalCode: String,
+        deliveryType: String,
+        collectionCenter: String
     },
-    orderId: { type: String },
+    orderId: { type: String, unique: true },
     trackingNumber: { type: String },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
-});
+}, { timestamps: true });
+orderSchema.index({ transactionReference: 1, orderId: 1 });
 module.exports = mongoose_1.default.model('Order', orderSchema);
 //# sourceMappingURL=order.js.map

@@ -23,6 +23,10 @@ const signUpUser = async (req, res) => {
         }
         const hashedPassword = await (0, hashPassword_1.hashPassword)(password);
         const newPhoneNumber = `+254${phoneNumber}`;
+        const existingPhone = await User.findOne({ phoneNumber: newPhoneNumber });
+        if (existingPhone) {
+            return res.status(401).json({ message: "Phone number already in use" });
+        }
         const newUser = new User({
             firstName,
             lastName,
@@ -32,7 +36,7 @@ const signUpUser = async (req, res) => {
         });
         await newUser.save();
         try {
-            const registrationDate = (0, date_fns_1.format)(new Date(), "yyyy-MM-dd");
+            const registrationDate = (0, date_fns_1.format)(newUser.createdAt, "MMMM d, yyyy");
             await publishToSignUpQueue("email_signup", {
                 firstName,
                 registrationDate,

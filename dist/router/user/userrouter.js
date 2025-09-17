@@ -15,6 +15,7 @@ const logoutUser = require("../../controller/auth/users/logout");
 const resetCode = require("../../controller/auth/users/forgotpassword");
 const verifyCode = require("../../controller/auth/users/verifycode");
 const newPsswd = require("../../controller/auth/users/newpassword");
+const nfcStatus = require("../../controller/wallet/nfcStatus");
 const googleSignin = require("../../controller/auth/users/google-signin");
 //const forgotPsswdController = require("../../controllers/auth/users/forgotpassword");
 //const verifyCodeController = require("../../controllers/auth/users/verifycode");
@@ -32,5 +33,6 @@ router.get("/google/callback", passport_1.default.authenticate("google", { failu
 router.post("/forgot-password/verify-email", resetCode),
     router.post("/forgot-password/verify-code", verifyCode),
     router.post("/forgot-password/new-passowrd", newPsswd),
-    module.exports = router;
+    router.patch("/wallet/nfc", userMiddleware, nfcStatus);
+module.exports = router;
 //# sourceMappingURL=userrouter.js.map

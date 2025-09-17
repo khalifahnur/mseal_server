@@ -8,6 +8,7 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const handlebars_1 = __importDefault(require("handlebars"));
 const Merchandise = require('../../../model/merchandise');
+require("dotenv").config();
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     port: 587,
@@ -50,13 +51,11 @@ const sendOrderConfirmation = async (order, recipientEmail, metadata) => {
                 };
             }),
             subtotal: order.totalAmount.toFixed(2),
-            shipping: '50.00',
-            tax: '0.00',
             total: order.totalAmount.toFixed(2),
             shippingName: `${metadata.firstName} ${metadata.lastName}`,
             shippingAddress: {
-                street: order.shippingAddress.street,
-                city: order.shippingAddress.city,
+                street: order.shippingAddress.street || '',
+                city: order.shippingAddress.city || '',
                 zip: order.shippingAddress.postalCode || '',
             },
             billingName: `${metadata.firstName} ${metadata.lastName}`,
@@ -71,7 +70,7 @@ const sendOrderConfirmation = async (order, recipientEmail, metadata) => {
         };
         const htmlContent = htmlCompiled(templateData);
         const mailOptions = {
-            from: '"M-seal Team" <no-reply@yourdomain.com>',
+            from: `"M-seal Team" <${process.env.GMAIL_USER}>`,
             to: recipientEmail,
             subject: `Your M-seal order confirmed #-${order.orderId}`,
             html: htmlContent,

@@ -6,8 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET_KEY = process.env.MSEAL_MEMBERSHIP_PAYSTACK_KEY || "";
+//const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
 const Membership = require("../../../model/membership");
+const limits = require("./checkTier");
 const initiatePayment = async (req, res) => {
     const { phoneNumber, amount, email, membershipTier, dob, physicalAddress, city, } = req.body;
     const userId = req.user?.id;
@@ -16,6 +18,17 @@ const initiatePayment = async (req, res) => {
     }
     if (!userId) {
         return res.status(400).json({ error: "User ID is required" });
+    }
+    const count = await Membership.countDocuments({
+        membershipTier,
+        paymentStatus: "Completed",
+    });
+    if (count >= limits[membershipTier]) {
+        return res
+            .status(400)
+            .json({
+            error: `${membershipTier} tier is full, please select another.`,
+        });
     }
     try {
         const response = await axios_1.default.post("https://api.paystack.co/charge", {
@@ -59,9 +72,7 @@ const initiatePayment = async (req, res) => {
     }
     catch (error) {
         console.error("Error initiating payment:", error.response?.data || error.message);
-        res
-            .status(500)
-            .json({
+        res.status(500).json({
             error: "Failed to initiate payment",
             details: error.response?.data || error.message,
         });

@@ -12,7 +12,7 @@ const Ticket = require("../../../model/ticket");
 const Transaction = require("../../../model/transaction");
 const Event = require("../../../model/event");
 const publishToTicketQueue = require("../../../lib/queue/ticket/producer");
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET = process.env.MSEAL_MATCH_PAYSTACK_KEY || "";
 const handlePaystackWebhook = async (req, res) => {
     const hash = crypto_1.default
         .createHmac("sha512", PAYSTACK_SECRET)

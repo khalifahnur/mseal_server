@@ -10,10 +10,11 @@ const eventSchema = new Schema({
     match: { type: String, required: true },
     date: { type: Date, required: true },
     venue: { type: String, required: true },
+    time: { type: String, required: true }
 });
 const ticketSchema = new Schema({
     ticketId: { type: String, required: true },
-    userId: { type: String, required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true, default: null },
     event: { type: [eventSchema], required: true },
     seat: { type: String },
     quantity: { type: Number, default: 1 },

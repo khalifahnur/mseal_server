@@ -10,7 +10,7 @@ const axios_1 = __importDefault(require("axios"));
 dotenv_1.default.config();
 const Wallet = require("../../../model/wallet");
 const Transaction = require("../../../model/transaction");
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET = process.env.MSEAL_WALLET_PAYSTACK_KEY || "";
 const handleWalletPaystackWebhook = async (req, res) => {
     const hash = crypto_1.default
         .createHmac("sha512", PAYSTACK_SECRET)

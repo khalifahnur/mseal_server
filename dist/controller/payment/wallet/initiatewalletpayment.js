@@ -8,7 +8,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const User = require("../../../model/user");
 const Wallet = require("../../../model/wallet");
 dotenv_1.default.config();
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET_KEY = process.env.MSEAL_WALLET_PAYSTACK_KEY || "";
 const initiatewalletpayment = async (req, res) => {
     const { amount, phoneNumber } = req.body;
     const userId = req.user?.id;
@@ -33,6 +33,9 @@ const initiatewalletpayment = async (req, res) => {
         }
         if (!wallet) {
             return res.status(400).json({ error: "wallet not found" });
+        }
+        if (amount < 0 && wallet.balance + amount < 0) {
+            throw new Error("Insufficient funds");
         }
         const response = await axios_1.default.post("https://api.paystack.co/charge", {
             email,

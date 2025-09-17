@@ -9,7 +9,7 @@ const membershipSchema = new Schema({
     membershipTier: {
         type: String,
         required: true,
-        enum: ["none", "bronze", "silver", "gold"],
+        enum: ["none", "ordinary", "bronze", "silver", "gold"],
         default: "none",
     },
     amount: { type: Number, required: true },
@@ -22,16 +22,15 @@ const membershipSchema = new Schema({
     },
     paymentStatus: {
         type: String,
-        enum: ['Pending', 'Completed', 'Failed'],
-        default: 'Pending',
+        enum: ["Pending", "Completed", "Failed"],
+        default: "Pending",
     },
-    dob: { type: String, required: true },
-    physicalAddress: { type: String, required: true },
+    dob: { type: String, required: false },
     city: { type: String, required: true },
-    reference: { type: String, unique: true },
-    createdAt: { type: Date, default: Date.now },
+    reference: { type: String, unique: true, sparse: true },
     expDate: { type: Date },
-});
+}, { timestamps: true });
+membershipSchema.index({ membershipTier: 1, status: 1, paymentStatus: 1 });
 const Membership = model("Membership", membershipSchema);
 module.exports = Membership;
 //# sourceMappingURL=membership.js.map

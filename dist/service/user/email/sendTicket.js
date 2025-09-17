@@ -23,10 +23,10 @@ const htmlTemplate = fs_1.default.readFileSync(path_1.default.join(__dirname, ".
 const htmlCompiled = handlebars_1.default.compile(htmlTemplate);
 const sendTicketConfirmation = async (ticketId, recipientEmail, metadata) => {
     let eventId = metadata.eventId;
-    const minimalTicketData = {
-        id: ticketId,
-        eventId,
-    };
+    const minimalTicketData = [{
+            id: ticketId,
+            eventId,
+        }];
     const encryptedData = encryptedTicket(minimalTicketData);
     const qrCodeDataURL = await qrcode_1.default.toDataURL(encryptedData, {
         width: 400,
@@ -59,7 +59,7 @@ const sendTicketConfirmation = async (ticketId, recipientEmail, metadata) => {
                     filename: 'ticket-qr.png',
                     content: qrCodeDataURL.split('base64,')[1],
                     encoding: 'base64',
-                    cid: 'ticketqr@mseal' // Content ID for embedding
+                    cid: 'ticketqr@mseal'
                 }]
         };
         const info = await transporter.sendMail(mailOptions);

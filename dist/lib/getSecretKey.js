@@ -5,7 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const ioredis_1 = __importDefault(require("ioredis"));
 const generateSecretKey_1 = __importDefault(require("./generateSecretKey"));
-const redis = new ioredis_1.default();
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const redis = new ioredis_1.default('redis://localhost:6379');
+//const redis = new Redis(process.env.REDIS_URL! + "?family=0" );
 const getSecretKey = async (userId) => {
     const SECRET_KEY_REDIS_KEY = `user:${userId}:jwt_secret`;
     let secretKey = await redis.get(SECRET_KEY_REDIS_KEY);

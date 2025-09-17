@@ -13,7 +13,7 @@ const Event = require("../../../../model/event");
 const publishToTicketQueue = require("../../../../lib/queue/ticket/producer");
 const User = require("../../../../model/user");
 const handleMsealWalletTicket = async (req, res) => {
-    const { eventId, match, date, venue, quantity, amount } = req.body;
+    const { eventId, match, date, venue, quantity, amount, time } = req.body;
     const totalAmount = amount * quantity;
     const userId = req.user?.id;
     if (!userId ||
@@ -22,7 +22,8 @@ const handleMsealWalletTicket = async (req, res) => {
         !date ||
         !venue ||
         !quantity ||
-        !amount) {
+        !amount ||
+        !time) {
         return res.status(400).json({ error: "Missing required fields" });
     }
     const session = await mongoose_1.default.startSession();
@@ -74,6 +75,7 @@ const handleMsealWalletTicket = async (req, res) => {
                         match,
                         date,
                         venue,
+                        time
                     },
                     paymentStatus: "Pending",
                 });
@@ -104,7 +106,7 @@ const handleMsealWalletTicket = async (req, res) => {
                     match,
                     date,
                     venue,
-                    quantity,
+                    quantity
                 },
             });
             return res.status(200).json({

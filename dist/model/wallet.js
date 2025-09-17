@@ -16,10 +16,12 @@ const walletSchema = new Schema({
     },
     paymentStatus: {
         type: String,
-        enum: ['Pending', 'Completed', 'Failed'],
-        default: 'Pending',
+        enum: ["Pending", "Completed", "Failed"],
+        default: "Pending",
     },
-    prepaidReference: { type: String, unique: true, default: "" }
+    prepaidReference: { type: String, unique: true, sparse: true },
+    expDate: { type: Date },
+    physicalNfcGiven: { type: Boolean, default: false },
 }, { timestamps: true });
 walletSchema.index({ balance: 1, userId: 1, status: 1 });
 const Wallet = model("Wallet", walletSchema);

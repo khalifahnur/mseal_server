@@ -7,9 +7,10 @@ const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const User = require("../../../model/user");
 const Order = require("../../../model/order");
+const Merchandise = require("../../../model/merchandise");
 const generateOrderId = require("../../../lib/generateOrderId");
 dotenv_1.default.config();
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET_KEY = process.env.MSEAL_MERCH_PAYSTACK_KEY || "";
 const initiateorderpayment = async (req, res) => {
     const { items, totalAmount, shippingAddress, phoneNumber } = req.body;
     const userId = req.user?.id;
@@ -31,6 +32,15 @@ const initiateorderpayment = async (req, res) => {
         if (!phoneNumber) {
             return res.status(400).json({ error: "User phone number is required" });
         }
+        for (const item of items) {
+            const product = await Merchandise.findById(item.productId);
+            if (!product) {
+                return res.status(400).json({ error: `Product ${item.productId} not found` });
+            }
+            if (product.stock < item.quantity) {
+                return res.status(400).json({ error: `Insufficient stock for product ${item.productId}` });
+            }
+        }
         const response = await axios_1.default.post("https://api.paystack.co/charge", {
             email,
             amount: totalAmount * 100,
@@ -49,6 +59,7 @@ const initiateorderpayment = async (req, res) => {
                 Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
                 "Content-Type": "application/json",
             },
+            timeout: 10000,
         });
         const order = new Order({
             userInfo: userId,

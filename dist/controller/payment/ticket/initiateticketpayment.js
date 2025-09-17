@@ -6,12 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
+const PAYSTACK_SECRET_KEY = process.env.MSEAL_MATCH_PAYSTACK_KEY || "";
 const User = require("../../../model/user");
 const Ticket = require("../../../model/ticket");
 const generateTicketId = require("../../../lib/generateTicketId");
 const initiateTicketPayment = async (req, res) => {
-    const { eventId, match, date, venue, quantity, amount } = req.body;
+    const { eventId, match, date, venue, quantity, amount, time } = req.body;
     const userId = req.user?.id;
     if (!PAYSTACK_SECRET_KEY) {
         return res.status(500).json({ error: "Paystack secret key is missing" });
@@ -70,6 +70,7 @@ const initiateTicketPayment = async (req, res) => {
                 date,
                 venue,
                 match,
+                time,
             },
             paymentStatus: "Pending",
         });

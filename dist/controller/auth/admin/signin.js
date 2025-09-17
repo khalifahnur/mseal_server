@@ -4,22 +4,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const hashPassword_1 = require("../../../lib/hashPassword");
 const getSecretKey_1 = __importDefault(require("../../../lib/getSecretKey"));
-//const sendSigninEmail = require('../../../services/email')
 const Admin = require("../../../model/admin");
 const loginAdmin = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email } = req.body;
         const admin = await Admin.findOne({ email });
         if (!admin) {
-            return res.status(401).json({ message: "Incorrect Email/Password" });
+            return res.status(401).json({ message: "Account not found." });
         }
-        //const isPasswordMatch = await bcrypt.compare(password, user.password);
-        const isPasswordMatch = (0, hashPassword_1.verifyPassword)(admin.password, password);
-        if (!isPasswordMatch) {
-            return res.status(401).json({ message: "Incorrect Email/Password" });
-        }
+        admin.verificationCode = null;
+        admin.verificationCodeExpiration = null;
         const secretKey = await (0, getSecretKey_1.default)(admin._id.toString());
         const token = jsonwebtoken_1.default.sign({ adminId: admin._id }, secretKey, {
             expiresIn: "24h",
@@ -36,8 +31,6 @@ const loginAdmin = async (req, res) => {
         })
             .status(200)
             .json({ message: "Login successful" });
-        // Send email
-        //await sendSigninEmail(email);
     }
     catch (error) {
         res.status(500).json({ message: "Error occurred during login" });
