@@ -41,6 +41,7 @@ const signUpUser = async (req: Request, res: Response) => {
       email,
       password: hashedPassword,
       phoneNumber: newPhoneNumber,
+      authProvider: 'email',
     });
 
     await newUser.save();

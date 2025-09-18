@@ -39,6 +39,8 @@ const getUserInfo = async (req: AuthenticatedRequest, res: Response) => {
       lastName: userInfo.lastName,
       email: userInfo.email,
       phoneNumber: userInfo.phoneNumber,
+      dob:membershipInfo?.dob || null,
+      city:membershipInfo?.city || null,
       membershipTier: membershipInfo?.membershipTier || null,
       membershipId: userInfo.membershipId || null,
       createdAt: membershipInfo?.createdAt || null,

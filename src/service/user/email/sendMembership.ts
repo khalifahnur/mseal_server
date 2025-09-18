@@ -27,7 +27,7 @@ const sendMembership = async (data: {
   email: string;
   membershipTier: string;
   purchaseDate: string;
-  transcationId: string;
+  transactionId: string;
   billingPeriod: string;
   paymentMethod: string;
   amount: string;
@@ -39,7 +39,7 @@ const sendMembership = async (data: {
       firstName: data.firstName,
       membershipTier: data.membershipTier,
       purchaseDate: data.purchaseDate,
-      transcationId: data.transcationId,
+      transcationId: data.transactionId,
       billingPeriod: data.billingPeriod,
       paymentMethod: data.paymentMethod,
       amount: data.amount,
@@ -52,7 +52,7 @@ const sendMembership = async (data: {
     const mailOptions = {
       from: `"M-seal Team" <${process.env.GMAIL_USER}>`,
       to: data.email,
-      subject: `Welcome to ${data.membershipTier}`,
+      subject: `Welcome to ${data.membershipTier} tier`,
       html: htmlContent,
     };
 
@@ -61,7 +61,7 @@ const sendMembership = async (data: {
     return info;
   } catch (error: any) {
     console.error("Error sending email:", error);
-    throw new Error(`Failed to send ticket confirmation: ${error.message}`);
+    throw new Error(`Failed to send membership confirmation: ${error.message}`);
   }
 };
 

@@ -11,12 +11,11 @@ const forgotPsswd = async (req:Request, res:Response) => {
     
     if (!user) return res.status(404).send("User not found");
 
-    // Generate verification code
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    //update the verification field in the db
     user.verificationCode = resetCode;
     user.verificationCodeExpiration = Date.now() + 600000;
+    user.authProvider = 'email',
 
     await user.save();
     

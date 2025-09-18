@@ -6,13 +6,30 @@ dotenv.config();
 
 const PAYSTACK_SECRET_KEY = process.env.MSEAL_MEMBERSHIP_PAYSTACK_KEY || "";
 //const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || "";
-
+const User = require("../../../model/user");
 const Membership = require("../../../model/membership");
 const limits = require("./checkTier");
+
+type MembershipTier = "ordinary" | "bronze" | "silver" | "gold";
+
+const tierPrices: Record<MembershipTier, number> = {
+  ordinary: 500,
+  bronze: 2000,
+  silver: 5000,
+  gold: 10000,
+};
 
 interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
+  };
+  body: {
+    phoneNumber: string;
+    amount?: number;
+    email: string;
+    membershipTier: MembershipTier;
+    dob?: string;
+    city: string;
   };
 }
 
@@ -23,7 +40,6 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
     email,
     membershipTier,
     dob,
-    physicalAddress,
     city,
   } = req.body;
   const userId = req.user?.id;
@@ -35,26 +51,66 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
   if (!userId) {
     return res.status(400).json({ error: "User ID is required" });
   }
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-  const count = await Membership.countDocuments({
-    membershipTier,
-    paymentStatus: "Completed",
-  });
-  
-  if (count >= limits[membershipTier]) {
-    return res
-      .status(400)
-      .json({
+    const existingMembership = user.membershipId
+      ? await Membership.findById(user.membershipId)
+      : null;
+
+    if (
+      existingMembership &&
+      existingMembership.membershipTier === membershipTier
+    ) {
+      return res
+        .status(400)
+        .json({ error: "User already has this membership tier" });
+    }
+
+    if (!tierPrices[membershipTier]) {
+      return res.status(400).json({ error: `Invalid membership tier: ${membershipTier}` });
+    }
+
+    if (!tierPrices[membershipTier]) {
+      return res.status(400).json({ error: `Invalid membership tier: ${membershipTier}` });
+    }
+
+    let finalAmount: number;
+    if (existingMembership) {
+      finalAmount = tierPrices[membershipTier] - tierPrices[existingMembership.membershipTier as MembershipTier];
+      if (finalAmount <= 0) {
+        return res.status(400).json({
+          error: `Cannot upgrade to ${membershipTier} as it is not higher than ${existingMembership.membershipTier}`,
+        });
+      }
+    } else {
+      finalAmount = tierPrices[membershipTier];
+      if (amount && amount !== finalAmount) {
+        return res.status(400).json({
+          error: `Provided amount (${amount}) does not match ${membershipTier} price (${finalAmount})`,
+        });
+      }
+    }
+
+    const count = await Membership.countDocuments({
+      membershipTier,
+      paymentStatus: "Completed",
+    });
+
+    if (count >= limits[membershipTier]) {
+      return res.status(400).json({
         error: `${membershipTier} tier is full, please select another.`,
       });
-  }
+    }
 
-  try {
     const response = await axios.post(
       "https://api.paystack.co/charge",
       {
         email,
-        amount: amount * 100,
+        amount: finalAmount * 100,
         currency: "KES",
         mobile_money: {
           phone: phoneNumber,
@@ -64,7 +120,6 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
           userId,
           membershipTier,
           dob,
-          physicalAddress,
           city,
         },
       },
@@ -76,17 +131,28 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
       }
     );
 
-    const membership = new Membership({
-      userId,
-      membershipTier,
-      dob: dob || null,
-      physicalAddress,
-      city,
-      amount,
-      reference: response.data.data.reference,
-      paymentStatus: "Pending",
-      status: "Pending",
-    });
+    let membership;
+    if (existingMembership) {
+      membership = existingMembership;
+      membership.membershipTier = membershipTier;
+      membership.amount = finalAmount;
+      membership.dob = dob || null;
+      membership.city = city;
+      membership.reference = response.data.data.reference;
+      membership.paymentStatus = "Pending";
+      membership.status = "Pending";
+    } else {
+      membership = new Membership({
+        userId,
+        membershipTier,
+        dob: dob || null,
+        city,
+        amount:finalAmount,
+        reference: response.data.data.reference,
+        paymentStatus: "Pending",
+        status: "Pending",
+      });
+    }
     await membership.save();
 
     res.json({

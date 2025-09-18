@@ -52,7 +52,7 @@ const initiateTicketPayment = async (
       "https://api.paystack.co/charge",
       {
         email,
-        amount: amount * 100, // Convert to kobo
+        amount: amount * 100,
         currency: "KES",
         mobile_money: {
           phone: phoneNumber,

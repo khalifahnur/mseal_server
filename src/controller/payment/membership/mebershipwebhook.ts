@@ -29,7 +29,6 @@ interface PaystackEvent {
       userId: string;
       membershipTier: string;
       dob?: string;
-      physicalAddress?: string;
       city?: string;
     };
   };
@@ -137,12 +136,12 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
           email: user.email,
           membershipTier: metadata.membershipTier,
           purchaseDate: new Date(),
-          transcationId: reference,
+          transactionId: reference,
           billingPeriod: expDate,
           paymentMethod: "Mpesa",
-          amount,
+          amount:amount/100,
           nextBillingDate: expDate,
-          recurringAmount: amount,
+          recurringAmount: amount/100,
         });
       });
 

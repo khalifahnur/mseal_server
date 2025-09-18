@@ -25,7 +25,8 @@ const consumerSignInEmailQueue = require("./lib/queue/auth/signin/consumer");
 const consumerSignUpEmailQueue = require("./lib/queue/auth/signup/consumer");
 const consumerForgotEmailQueue = require("./lib/queue/auth/forgotPsswd/consumer");
 const consmuerValidTicketEmailueue = require("./lib/queue/ticket/validTicketConsumer");
-const consumerAdminSignInEmailQueue = require("./lib/queue/auth/verifyAdmin/consumer")
+const consumerAdminSignInEmailQueue = require("./lib/queue/auth/verifyAdmin/consumer");
+const consumerMembershipQueue = require("./lib/queue/membership/consumer");
 
 require("./lib/passport-config");
 const startCronJob = require("./controller/ticket/tickets/updateStatus");
@@ -56,7 +57,7 @@ const corsOptions = {
   origin: [
     "https://mseal-membership.vercel.app",
     "https://mseal-master.vercel.app",
-  ], // local testing => "http://localhost:3001"
+  ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -65,7 +66,7 @@ const corsOptions = {
 
 const io = new Server(server, {
   cors: {
-    origin: ["https://mseal-membership.vercel.app", "http://localhost:3000",],
+    origin: ["https://mseal-membership.vercel.app"],
     methods: ["GET", "POST"],
     credentials:true,
   },
@@ -107,7 +108,6 @@ mongoose
 
 const redisClient = createClient({
   url: process.env.REDIS_URL,
-  //url:'redis://localhost:6379',
 });
 
 redisClient.on("error", (err) => console.error("Redis Client Error", err));
@@ -163,6 +163,9 @@ consmuerValidTicketEmailueue().catch(({err}:any)=>{
 consumerAdminSignInEmailQueue().catch(({err}:any)=>{
   console.log("Failed to start (admin_verification)",err)
 });
+consumerMembershipQueue().catch(({err}:any)=>{
+  console.log("Failed to start (membership_verification)",err)
+})
 
 setupWebSocket(io)
 setupMembershipWebSocket(io)

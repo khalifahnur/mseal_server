@@ -24,6 +24,7 @@ const googleSignin = async (req: Request, res: Response) => {
         email: userData.emails[0].value,
         password: null,
         phoneNumber: null,
+        authProvider: 'google',
       });
       await user.save();
     }
@@ -44,7 +45,7 @@ const googleSignin = async (req: Request, res: Response) => {
       .redirect("https://mseal-membership.vercel.app/home");
   } catch (err) {
     console.error("Google auth error:", err);
-    res.redirect("http://localhost:3000/login?error=auth_failed");
+    res.redirect("https://mseal-membership.vercel.app/not-found");
   }
 };
 

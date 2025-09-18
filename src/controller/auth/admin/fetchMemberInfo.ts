@@ -22,12 +22,12 @@ const getMemberInfo = async (req: AuthenticatedRequest, res: Response) => {
     const users = await User.find()
       .populate(
         "membershipId",
-        "membershipTier amount status createdAt expDate"
+        "membershipTier amount status createdAt expDate city dob"
       )
       .lean();
 
     if (!users || users.length === 0) {
-      return res.status(404).json({ error: "No users found" });
+      return res.status(404).json({ error: "Member not found" });
     }
 
     const responseData = await Promise.all(
@@ -39,6 +39,8 @@ const getMemberInfo = async (req: AuthenticatedRequest, res: Response) => {
           lastName: user.lastName,
           email: user.email,
           phoneNumber: user.phoneNumber,
+          dob:user.membershipId?.dob || null,
+          city:user.membershipId?.city || null,
           membershipTier: user.membershipId?.membershipTier || null,
           membershipId: user.membershipId?._id || null,
           createdAt: user.membershipId?.createdAt || null,

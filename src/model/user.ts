@@ -7,6 +7,7 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: false },
   phoneNumber: { type: String, required: false },
+  authProvider: { type: String, enum: ['email', 'google'], default: 'email' },
   membershipId: { type: Schema.Types.ObjectId, ref: 'Membership', default: null},
   walletId: { type: Schema.Types.ObjectId, ref: 'Wallet', default: null},
   verificationCode: { type: String },
