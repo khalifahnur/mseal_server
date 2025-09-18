@@ -9,7 +9,7 @@ interface QueueMessage {
   email: string;
   membershipTier: string;
   purchaseDate: string;
-  transcationId: string;
+  transactionId: string;
   billingPeriod: string;
   paymentMethod: string;
   amount: string;
@@ -17,7 +17,7 @@ interface QueueMessage {
   recurringAmount: string;
 }
 
-const publishToTicketQueue = async (queueName: string, data: QueueMessage) => {
+const publishToQueue = async (queueName: string, data: QueueMessage) => {
   let connection;
   let channel;
   try {
@@ -39,4 +39,4 @@ const publishToTicketQueue = async (queueName: string, data: QueueMessage) => {
   }
 };
 
-module.exports = publishToTicketQueue;
+module.exports = publishToQueue;
