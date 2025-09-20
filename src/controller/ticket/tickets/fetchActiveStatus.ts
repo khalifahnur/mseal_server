@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 const Ticket = require("../../../model/ticket");
 const encryptQr = require("../../../lib/encryptedQr");
-const Event = require("../../../model/event")
 
 interface AuthenticatedRequest extends Request {
   user?: {
