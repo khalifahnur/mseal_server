@@ -34,7 +34,7 @@ const handleNfcTicketPayment = async (req:Request, res:Response) => {
     });
   }
 
-  const { eventId, match, date, venue, quantity, amount } = req.body;
+  const { eventId, match, date, venue, quantity, amount,time } = req.body;
   const totalAmount = amount * quantity;
 
   const { id } = req.params;
@@ -111,7 +111,7 @@ const handleNfcTicketPayment = async (req:Request, res:Response) => {
           amount,
           status: "pending",
           paymentReference: reference,
-          event: { eventId, match, date, venue },
+          event: { eventId, match, date, venue ,time},
           paymentStatus: "Pending",
         });
       }
