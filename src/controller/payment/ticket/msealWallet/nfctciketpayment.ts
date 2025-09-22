@@ -21,6 +21,7 @@ const paymentSchema = Joi.object({
   venue: Joi.string().required(),
   quantity: Joi.number().integer().min(1).required(),
   amount: Joi.number().min(0).required(),
+  time: Joi.string().required(),
 });
 
 const handleNfcTicketPayment = async (req:Request, res:Response) => {
