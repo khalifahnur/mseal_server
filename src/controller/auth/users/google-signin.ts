@@ -15,17 +15,27 @@ const googleSignin = async (req: Request, res: Response) => {
   try {
     const userData = req.user as GoogleProfile;
 
+    if (!userData.emails?.[0]?.value) {
+      throw new Error("Email is required");
+    }
+
     let user = await User.findOne({ email: userData.emails[0].value });
 
     if (!user) {
       user = new User({
-        firstName: userData.name.givenName,
-        lastName: userData.name.familyName,
+        firstName: userData.name?.givenName || "Unknown",
+        lastName: userData.name?.familyName || "Unknown",
         email: userData.emails[0].value,
         password: null,
         phoneNumber: null,
         authProvider: 'google',
       });
+      await user.save();
+    } else if (user.authProvider !== 'google') {
+      user.authProvider = 'google';
+      user.firstName = userData.name?.givenName || user.firstName || "Unknown";
+      user.lastName = userData.name?.familyName || user.lastName || "Unknown";
+      user.password = null;
       await user.save();
     }
 
