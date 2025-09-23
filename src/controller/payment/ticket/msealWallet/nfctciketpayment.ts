@@ -120,7 +120,7 @@ const handleNfcTicketPayment = async (req:Request, res:Response) => {
       event.availableTickets -= quantity;
       await event.save({ session });
 
-      ticket.status = "valid";
+      ticket.status = "used";
       ticket.paymentStatus = "Completed";
       await ticket.save({ session });
 
