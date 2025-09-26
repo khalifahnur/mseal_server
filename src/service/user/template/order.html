@@ -18,13 +18,13 @@
             max-width: 600px;
             margin: 0 auto;
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background: linear-gradient(135deg, #fae115, #000);
-            color: white;
+            background: linear-gradient(135deg, #1a1a1a, #333);
+            color: #fff;
             padding: 30px;
             text-align: center;
         }
@@ -33,12 +33,12 @@
             width: auto;
         }
         .confirmation-message {
-            padding: 20px 0;
+            padding: 20px 30px;
             text-align: center;
             font-size: 18px;
         }
         .order-details {
-            padding: 5px 0;
+            padding: 5px 30px;
         }
         .order-details h2 {
             color: #333333;
@@ -63,6 +63,7 @@
         }
         .customer-info {
             margin-bottom: 20px;
+            padding: 0 30px;
         }
         .customer-info h2 {
             color: #333333;
@@ -71,14 +72,11 @@
         }
         .footer {
             margin-top: 30px;
-            padding-top: 20px;
+            padding: 20px 30px;
             text-align: center;
             font-size: 12px;
-            color: #3d3c38;
-            background: linear-gradient(135deg, #fae115, #000);
-            border-top: 3px solid #000;
-            width: 100%;
-            max-width: 944px;
+            color: #fff;
+            background: linear-gradient(135deg, #1a1a1a, #333);
         }
         .button {
             display: inline-block;
@@ -96,11 +94,40 @@
             border-left: 4px solid #4CAF50;
         }
         .imgUrl{
-            width: 50px; height: 50px; object-fit: cover; margin-right: 10px;
+            width: 50px; 
+            height: 50px; 
+            object-fit: cover; 
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+        .product-cell {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+        }
+        .delivery-info, .collection-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .info-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
         @media only screen and (max-width: 600px) {
             .container {
-                padding: 10px;
+                margin: 10px;
+                border-radius: 8px;
+            }
+            .confirmation-message, .order-details, .customer-info {
+                padding: 15px 20px;
             }
             table {
                 font-size: 14px;
@@ -111,8 +138,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="https://res.cloudinary.com/dfuh1q6ic/image/upload/v1751304986/mseal-logo_dcsiqz.png" alt="mseal Logo" class="logo" />
-            <h2>Order confirmed</h2>
+            <img src="https://res.cloudinary.com/dfuh1q6ic/image/upload/v1751304986/mseal-logo_dcsiqz.png" alt="Mseal Logo" class="logo" />
+            <h2>Order Confirmed</h2>
         </div>
         
         <div class="confirmation-message">
@@ -122,9 +149,12 @@
         
         <div class="order-details">
             <h2>Order Information</h2>
-            <p><strong>Order Number:</strong> #-{{orderNumber}}</p>
+            <p><strong>Order Number:</strong> #{{orderNumber}}</p>
             <p><strong>Order Date:</strong> {{orderDate}}</p>
             <p><strong>Payment Method:</strong> {{paymentMethod}}</p>
+            <p><strong>Delivery Type:</strong> 
+                <span style="text-transform: capitalize;">{{deliveryType}}</span>
+            </p>
             <hr />
             <h2>Order Summary</h2>
             <table>
@@ -139,68 +169,99 @@
                 <tbody>
                     {{#each items}}
                     <tr>
-                        <div style="display: flex; align-items: center;">
-                            <img src="{{this.imageUrl}}" alt="{{this.name}}" class="imgUrl" />
-                            <span>{{this.name}}</span>
-                          </div>
+                        <td>
+                            <div class="product-cell">
+                                {{#if this.imageUrl}}
+                                <img src="{{this.imageUrl}}" alt="{{this.name}}" class="imgUrl" />
+                                {{/if}}
+                                <div>
+                                    <div><strong>{{this.name}}</strong></div>
+                                    {{#if this.size}}<div style="font-size: 12px; color: #666;">Size: {{this.size}}</div>{{/if}}
+                                </div>
+                            </div>
+                        </td>
                         <td>{{this.quantity}}</td>
-                        <td>Ksh.{{this.price}}</td>
-                        <td>Ksh.{{this.total}}</td>
+                        <td>Ksh {{this.price}}</td>
+                        <td>Ksh {{this.total}}</td>
                     </tr>
                     {{/each}}
                     <tr>
                         <td colspan="3" style="text-align: right;"><strong>Subtotal:</strong></td>
-                        <td>Ksh.{{subtotal}}</td>
+                        <td>Ksh {{subtotal}}</td>
                     </tr>
-                    <!-- <tr>
-                        <td colspan="3" style="text-align: right;"><strong>Shipping:</strong></td>
-                        <td>Ksh.{{shipping}}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" style="text-align: right;"><strong>Tax:</strong></td>
-                        <td>Ksh.{{tax}}</td>
-                    </tr> -->
                     <tr class="total-row">
                         <td colspan="3" style="text-align: right;"><strong>TOTAL:</strong></td>
-                        <td>Ksh.{{total}}</td>
+                        <td>Ksh {{total}}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
         <img src="https://ci3.googleusercontent.com/meips/ADKq_NYcaTCXJASTcXc2daG_goKcFYL19p-0ygK2gaP6d9b_-R7oTHbdah9Nc7qpt6-RQlEJRSTkOzhEDlIa3EcVbVh-FY34SoLl1cWDxXh-eDfNAdLe7YTBWS5GM0GDX30=s0-d-e1-ft#https://s3-eu-west-1.amazonaws.com/glovo-emails/static/dist/img/wave.png" alt="separator" style="width:100%;object-fit:cover" class="CToWUd" data-bit="iit">
+        
         <div class="customer-info">
-            <h2>Shipping Information</h2>
-            <p>
-                {{shippingName}}<br>
-                {{shippingAddress.street}}<br>
-                {{shippingAddress.city}}, {{shippingAddress.zip}}<br>
-                KE
-            </p>
-            
+            <!-- Delivery Information (shown only for "outside" delivery type) -->
+            {{#ifEquals deliveryType "outside"}}
+            <div class="delivery-info">
+                <span class="info-badge">🚚 Delivery Information</span>
+                <h2>Shipping Address</h2>
+                <p>
+                    <strong>{{shippingName}}</strong><br>
+                    {{shippingAddress.street}}<br>
+                    {{shippingAddress.city}}, {{shippingAddress.zip}}<br>
+                    {{shippingAddress.country}}
+                </p>
+                {{#if trackingNumber}}
+                <p><strong>Tracking Number:</strong> {{trackingNumber}}</p>
+                {{/if}}
+            </div>
+            {{/ifEquals}}
+
+            <!-- Collection Information (shown only for collection type) -->
+            {{#ifEquals deliveryType "collection"}}
+            <div class="collection-info">
+                <span class="info-badge">🏪 Collection Information</span>
+                <h2>Collection Center</h2>
+                <p>
+                    <strong>{{shippingName}}</strong><br>
+                    {{collectionCenter}}<br>
+                </p>
+                <p><strong>Collection Hours:</strong> Monday - Friday, 9:00 AM - 5:00 PM</p>
+                <p><em>Please bring your order confirmation and valid ID when collecting your items.</em></p>
+            </div>
+            {{/ifEquals}}
+
             <h2>Billing Information</h2>
             <p>
-                {{billingName}}<br>
+                <strong>{{billingName}}</strong><br>
                 {{billingAddress.street}}<br>
                 {{billingAddress.city}}, {{billingAddress.zip}}<br>
-                KE
+                {{billingAddress.country}}
             </p>
         </div>
+
         <img src="https://ci3.googleusercontent.com/meips/ADKq_NYcaTCXJASTcXc2daG_goKcFYL19p-0ygK2gaP6d9b_-R7oTHbdah9Nc7qpt6-RQlEJRSTkOzhEDlIa3EcVbVh-FY34SoLl1cWDxXh-eDfNAdLe7YTBWS5GM0GDX30=s0-d-e1-ft#https://s3-eu-west-1.amazonaws.com/glovo-emails/static/dist/img/wave.png" alt="separator" style="width:100%;object-fit:cover" class="CToWUd" data-bit="iit">
-        <div class="note">
+        
+        <div class="note" style="margin: 20px 30px;">
+            {{#ifEquals deliveryType "outside"}}
             <p><strong>Estimated Delivery Date:</strong> {{estimatedDelivery}}</p>
             <p>You will receive a shipping confirmation email with tracking information once your order has been shipped.</p>
+            {{/ifEquals}}
+            
+            {{#ifEquals deliveryType "collection"}}
+            <p><strong>Ready for Collection:</strong> Your order will be ready for collection within 24 hours.</p>
+            <p>We will notify you when your order is ready for pickup.</p>
+            {{/ifEquals}}
         </div>
         
         <div style="text-align: center; margin: 30px 0;">
-            <a class="button">Track Your Order</a>
+            <a href="#" class="button">Track Your Order</a>
         </div>
         
         <div class="footer">
-            <!-- <div style="width:100%;background-size:cover;background-position:center;height:60px;background-image:url('https://murangaseal.com//assets/logo-a25ccce319b09f73006dc94d71887dbd26f5afeec59c2fa5dca6afaf101fe82c.png')"></div> -->
             <p>If you have any questions about your order, please contact our customer service team at:</p>
-            <p><a href="mailto:support@mseal.com">support@m-seal.com</a> or call us at <a href="tel:+254712345678">+254 (7123) 456-78</a></p>
+            <p><a href="mailto:info@murangaseal.com" style="color: #4CAF50;">info@murangaseal.com</a> or call us at <a href="tel:+254712633130" style="color: #4CAF50;">+254712633130</a></p>
             <p>&copy; 2025 M-seal. All rights reserved.</p>
-            <p>Muranga Stadium, Muranga County, Kenya</p>
         </div>
     </div>
 </body>

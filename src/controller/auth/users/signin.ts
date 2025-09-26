@@ -21,7 +21,7 @@ const loginUser = async (req: Request, res: Response) => {
     }
 
     if (user.authProvider === "google") {
-      return res.status(400).json({ message: "Please log in using Google" });
+      return res.status(400).json({ message: "Previously used  Google for login" });
     }
 
     if (!user.password) {

@@ -6,6 +6,11 @@ const Merchandise = require('../../../model/merchandise');
 
 require("dotenv").config();
 
+Handlebars.registerHelper('ifEquals', (arg1: any, arg2: any, options: any) => {
+    return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
+});
+
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   port: 587,
@@ -47,7 +52,10 @@ const sendOrderConfirmation = async (order: any, recipientEmail: string, metadat
         month: 'long',
         day: 'numeric',
       }),
-      paymentMethod: 'M-Pesa via Paystack',
+      paymentMethod: order.paymentMethod,
+      deliveryType: order.shippingAddress.deliveryType?.trim() || '',
+      collectionCenter: order.shippingAddress.collectionCenter || '',
+      trackingNumber: order.trackingNumber,
       items: order.items.map((item: any) => {
         const productDetails = productMap.get(item.productId.toString());
         return {
@@ -56,33 +64,37 @@ const sendOrderConfirmation = async (order: any, recipientEmail: string, metadat
           quantity: item.quantity,
           price: item.price.toFixed(2),
           total: (item.quantity * item.price).toFixed(2),
+          size: item.size,
         };
       }),
       subtotal: order.totalAmount.toFixed(2),
       total: order.totalAmount.toFixed(2),
-      shippingName:`${metadata.firstName} ${metadata.lastName}`,
+      shippingName: `${metadata.firstName} ${metadata.lastName}`,
       shippingAddress: {
         street: order.shippingAddress.street || '',
         city: order.shippingAddress.city || '',
         zip: order.shippingAddress.postalCode || '',
+        country: order.shippingAddress.country || 'Kenya'
       },
-      billingName:`${metadata.firstName} ${metadata.lastName}`,
+      billingName: `${metadata.firstName} ${metadata.lastName}`,
       billingAddress: {
-        street: order.shippingAddress.street,
-        city: order.shippingAddress.city,
+        street: order.shippingAddress.street || '',
+        city: order.shippingAddress.city || '',
         zip: order.shippingAddress.postalCode || '',
+        country: order.shippingAddress.country || 'Kenya'
       },
       estimatedDelivery: order.estimatedDelivery
         ? new Date(order.estimatedDelivery).toLocaleDateString('en-GB')
-        : null,
+        : 'Within 3-5 business days',
     };
 
     const htmlContent = htmlCompiled(templateData);
+    console.log(templateData)
 
     const mailOptions = {
       from: `"M-seal Team" <${process.env.GMAIL_USER}>`,
       to: recipientEmail,
-      subject: `Your M-seal order confirmed #-${order.orderId}`,
+      subject: `Your M-seal order confirmed #${order.orderId}`,
       html: htmlContent,
     };
 

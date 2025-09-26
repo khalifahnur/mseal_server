@@ -1,18 +1,41 @@
 import amqp, { Channel } from "amqplib";
 import dotenv from "dotenv";
-const Order = require("../../../model/order");
+
 const sendOrderConfirmation = require("../../../service/user/email/sendOrder");
 
 dotenv.config();
 
 const rabbitMQUrl =
   process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
-// const rabbitMQUrl =
-//    "amqp://guest:guest@localhost:5672";
+// const rabbitMQUrl = "amqp://guest:guest@localhost:5672";
 const queue = "email_order_confirmation";
 
 interface QueueMessage {
-  orderId: string;
+  order: {
+    userInfo: string;
+    items: {
+      productId: string;
+      quantity: number;
+      price: number;
+      size?: string;
+      customization?: string;
+    }[];
+    totalAmount: number;
+    shippingAddress: {
+      street: string;
+      city: string;
+      country: string;
+      postalCode: string;
+      deliveryType: string;
+      collectionCenter: string;
+    };
+    phoneNumber: number;
+    transactionReference: string;
+    status: string;
+    paymentStatus: string;
+    orderId: string;
+    createdAt:Date
+  };
   email: string;
   metadata?: any;
 }
@@ -45,18 +68,14 @@ const consumeEmailQueue = async () => {
 
           try {
             const data: QueueMessage = JSON.parse(msg.content.toString());
-            if (!data.orderId || !data.email) {
+            if (!data.order || !data.email) {
               throw new Error("Invalid message format");
             }
 
-            const order = await Order.findById(data.orderId);
-            if (!order) {
-              console.warn(`Order not found: ${data.orderId}`);
-              channel.ack(msg);
-              return;
-            }
+            console.log(data);
 
-            await sendOrderConfirmation(order, data.email, data.metadata);
+
+            await sendOrderConfirmation(data.order, data.email, data.metadata);
             channel.ack(msg);
           } catch (err) {
             console.error("Email consumer error(order):", err);

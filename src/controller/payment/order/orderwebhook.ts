@@ -94,10 +94,8 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
         order.updatedAt = new Date();
         await order.save({ session });
         
-        console.log("metadata",metadata);
-        
         await publishToQueue("email_order_confirmation", {
-          orderId: order._id,
+          order,
           email: customer.email,
           metadata,
         });
