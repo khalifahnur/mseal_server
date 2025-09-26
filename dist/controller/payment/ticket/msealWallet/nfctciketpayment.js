@@ -19,6 +19,7 @@ const paymentSchema = Joi.object({
     venue: Joi.string().required(),
     quantity: Joi.number().integer().min(1).required(),
     amount: Joi.number().min(0).required(),
+    time: Joi.string().required(),
 });
 const handleNfcTicketPayment = async (req, res) => {
     const { error: validationError } = paymentSchema.validate(req.body);
@@ -30,7 +31,7 @@ const handleNfcTicketPayment = async (req, res) => {
             },
         });
     }
-    const { eventId, match, date, venue, quantity, amount } = req.body;
+    const { eventId, match, date, venue, quantity, amount, time } = req.body;
     const totalAmount = amount * quantity;
     const { id } = req.params;
     const encryptedToken = decodeURIComponent(id);
@@ -102,13 +103,13 @@ const handleNfcTicketPayment = async (req, res) => {
                     amount,
                     status: "pending",
                     paymentReference: reference,
-                    event: { eventId, match, date, venue },
+                    event: { eventId, match, date, venue, time },
                     paymentStatus: "Pending",
                 });
             }
             event.availableTickets -= quantity;
             await event.save({ session });
-            ticket.status = "valid";
+            ticket.status = "used";
             ticket.paymentStatus = "Completed";
             await ticket.save({ session });
             wallet.balance -= totalAmount;

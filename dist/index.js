@@ -29,6 +29,7 @@ const consumerSignUpEmailQueue = require("./lib/queue/auth/signup/consumer");
 const consumerForgotEmailQueue = require("./lib/queue/auth/forgotPsswd/consumer");
 const consmuerValidTicketEmailueue = require("./lib/queue/ticket/validTicketConsumer");
 const consumerAdminSignInEmailQueue = require("./lib/queue/auth/verifyAdmin/consumer");
+const consumerMembershipQueue = require("./lib/queue/membership/consumer");
 require("./lib/passport-config");
 const startCronJob = require("./controller/ticket/tickets/updateStatus");
 const userrouter = require("./router/user/userrouter");
@@ -53,7 +54,7 @@ const corsOptions = {
         "https://mseal-membership.vercel.app",
         "https://mseal-master.vercel.app",
         "http://localhost:3000"
-    ], // local testing => "http://localhost:3001"
+    ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -143,6 +144,9 @@ consmuerValidTicketEmailueue().catch(({ err }) => {
 });
 consumerAdminSignInEmailQueue().catch(({ err }) => {
     console.log("Failed to start (admin_verification)", err);
+});
+consumerMembershipQueue().catch(({ err }) => {
+    console.log("Failed to start (membership_verification)", err);
 });
 (0, orderConfirmPayment_1.default)(io);
 (0, membershipConfirmPayment_1.default)(io);

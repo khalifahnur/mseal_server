@@ -25,7 +25,7 @@ const sendMembership = async (data) => {
             firstName: data.firstName,
             membershipTier: data.membershipTier,
             purchaseDate: data.purchaseDate,
-            transcationId: data.transcationId,
+            transcationId: data.transactionId,
             billingPeriod: data.billingPeriod,
             paymentMethod: data.paymentMethod,
             amount: data.amount,
@@ -36,7 +36,7 @@ const sendMembership = async (data) => {
         const mailOptions = {
             from: `"M-seal Team" <${process.env.GMAIL_USER}>`,
             to: data.email,
-            subject: `Welcome to ${data.membershipTier}`,
+            subject: `Welcome to ${data.membershipTier} tier`,
             html: htmlContent,
         };
         const info = await transporter.sendMail(mailOptions);
@@ -45,7 +45,7 @@ const sendMembership = async (data) => {
     }
     catch (error) {
         console.error("Error sending email:", error);
-        throw new Error(`Failed to send ticket confirmation: ${error.message}`);
+        throw new Error(`Failed to send membership confirmation: ${error.message}`);
     }
 };
 module.exports = sendMembership;

@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Ticket = require("../../../model/ticket");
 const encryptQr = require("../../../lib/encryptedQr");
-const Event = require("../../../model/event");
 const getValidTickets = async (req, res) => {
     const userId = req.user?.id;
     try {

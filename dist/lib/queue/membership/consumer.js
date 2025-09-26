@@ -39,14 +39,14 @@ const consumeEmailQueue = async () => {
                     channel.ack(msg);
                 }
                 catch (err) {
-                    console.error("Email consumer error (ticket):", err);
+                    console.error("Email consumer error (membership):", err);
                     channel.nack(msg, false, false);
                 }
             }, { noAck: false });
-            console.log("Email consumer started (ticket)...");
+            console.log("Email consumer started (membership)...");
         }
         catch (err) {
-            console.error("Failed to start consumer(ticket):", err);
+            console.error("Failed to start consumer(membership):", err);
             setTimeout(connect, 5000);
         }
     };

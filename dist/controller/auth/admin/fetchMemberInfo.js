@@ -11,10 +11,10 @@ const getMemberInfo = async (req, res) => {
             return res.status(400).json({ error: "admin not authenticated" });
         }
         const users = await User.find()
-            .populate("membershipId", "membershipTier amount status createdAt expDate")
+            .populate("membershipId", "membershipTier amount status createdAt expDate city dob")
             .lean();
         if (!users || users.length === 0) {
-            return res.status(404).json({ error: "No users found" });
+            return res.status(404).json({ error: "Member not found" });
         }
         const responseData = await Promise.all(users.map(async (user) => {
             const walletInfo = await Wallet.findOne({ userId: user._id }).lean();
@@ -23,6 +23,8 @@ const getMemberInfo = async (req, res) => {
                 lastName: user.lastName,
                 email: user.email,
                 phoneNumber: user.phoneNumber,
+                dob: user.membershipId?.dob || null,
+                city: user.membershipId?.city || null,
                 membershipTier: user.membershipId?.membershipTier || null,
                 membershipId: user.membershipId?._id || null,
                 createdAt: user.membershipId?.createdAt || null,

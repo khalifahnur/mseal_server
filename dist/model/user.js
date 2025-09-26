@@ -7,10 +7,11 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const { Schema, model } = mongoose_1.default;
 const userSchema = new Schema({
     firstName: { type: String, required: true },
-    lastName: { type: String, require: true },
+    lastName: { type: String, required: false },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: false },
     phoneNumber: { type: String, required: false },
+    authProvider: { type: String, enum: ['email', 'google'], default: 'email' },
     membershipId: { type: Schema.Types.ObjectId, ref: 'Membership', default: null },
     walletId: { type: Schema.Types.ObjectId, ref: 'Wallet', default: null },
     verificationCode: { type: String },

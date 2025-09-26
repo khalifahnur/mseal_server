@@ -18,6 +18,12 @@ const loginUser = async (req, res) => {
         if (!user) {
             return res.status(401).json({ message: "Incorrect Email/Password" });
         }
+        if (user.authProvider === "google") {
+            return res.status(400).json({ message: "Previously used  Google for login" });
+        }
+        if (!user.password) {
+            return res.status(400).json({ message: "No password set for this account. Please log in using Google or reset your password." });
+        }
         const isPasswordMatch = (0, hashPassword_1.verifyPassword)(user.password, password);
         if (!isPasswordMatch) {
             return res.status(401).json({ message: "Incorrect Email/Password" });

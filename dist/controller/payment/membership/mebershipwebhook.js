@@ -88,12 +88,12 @@ const handlePaystackMembershipWebhook = async (req, res) => {
                     email: user.email,
                     membershipTier: metadata.membershipTier,
                     purchaseDate: new Date(),
-                    transcationId: reference,
+                    transactionId: reference,
                     billingPeriod: expDate,
                     paymentMethod: "Mpesa",
-                    amount,
+                    amount: amount / 100,
                     nextBillingDate: expDate,
-                    recurringAmount: amount,
+                    recurringAmount: amount / 100,
                 });
             });
             res.status(200).json({ message: "Webhook processed successfully" });

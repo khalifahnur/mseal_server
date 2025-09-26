@@ -5,12 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const amqplib_1 = __importDefault(require("amqplib"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const Order = require("../../../model/order");
 const sendOrderConfirmation = require("../../../service/user/email/sendOrder");
 dotenv_1.default.config();
-// const rabbitMQUrl =
-//   process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
-const rabbitMQUrl = "amqp://guest:guest@localhost:5672";
+const rabbitMQUrl = process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
+// const rabbitMQUrl = "amqp://guest:guest@localhost:5672";
 const queue = "email_order_confirmation";
 const consumeEmailQueue = async () => {
     let connection;
@@ -34,16 +32,11 @@ const consumeEmailQueue = async () => {
                     return;
                 try {
                     const data = JSON.parse(msg.content.toString());
-                    if (!data.orderId || !data.email) {
+                    if (!data.order || !data.email) {
                         throw new Error("Invalid message format");
                     }
-                    const order = await Order.findById(data.orderId);
-                    if (!order) {
-                        console.warn(`Order not found: ${data.orderId}`);
-                        channel.ack(msg);
-                        return;
-                    }
-                    await sendOrderConfirmation(order, data.email, data.metadata);
+                    console.log(data);
+                    await sendOrderConfirmation(data.order, data.email, data.metadata);
                     channel.ack(msg);
                 }
                 catch (err) {

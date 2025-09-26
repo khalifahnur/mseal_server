@@ -85,7 +85,7 @@ const handleMsealWalletOrder = async (req, res) => {
             order.updatedAt = new Date();
             await order.save({ session });
             await publishToQueue("email_order_confirmation", {
-                orderId: order._id,
+                order,
                 email: user.email,
                 metadata: {
                     userId,

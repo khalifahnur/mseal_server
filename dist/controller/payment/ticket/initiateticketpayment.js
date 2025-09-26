@@ -33,7 +33,7 @@ const initiateTicketPayment = async (req, res) => {
         }
         const response = await axios_1.default.post("https://api.paystack.co/charge", {
             email,
-            amount: amount * 100, // Convert to kobo
+            amount: amount * 100,
             currency: "KES",
             mobile_money: {
                 phone: phoneNumber,

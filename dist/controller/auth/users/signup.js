@@ -33,6 +33,7 @@ const signUpUser = async (req, res) => {
             email,
             password: hashedPassword,
             phoneNumber: newPhoneNumber,
+            authProvider: 'email',
         });
         await newUser.save();
         try {
