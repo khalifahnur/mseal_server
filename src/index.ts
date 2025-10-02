@@ -12,6 +12,8 @@ import session from "express-session";
 import {RedisStore} from "connect-redis";
 import { createClient } from "redis";
 
+dotenv.config(); 
+
 import { Server } from "socket.io";
 import setupWebSocket from "./socket/orderConfirmPayment";
 import setupMembershipWebSocket from "./socket/membershipConfirmPayment";
@@ -42,7 +44,7 @@ const staffrouter = require("./router/staff/staffrouter");
 const transactionrouter = require("./router/transaction/transactionrouter");
 const orderrouter = require("./router/order/orderrouter");
 
-dotenv.config();
+
 
 const app = express();
 const server = http.createServer(app);
@@ -57,6 +59,7 @@ const corsOptions = {
   origin: [
     "https://mseal-membership.vercel.app",
     "https://mseal-master.vercel.app",
+    "https://msealticket.vercel.app"
   ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
@@ -66,7 +69,7 @@ const corsOptions = {
 
 const io = new Server(server, {
   cors: {
-    origin: ["https://mseal-membership.vercel.app"],
+    origin: ["https://mseal-membership.vercel.app", "https://msealticket.vercel.app",],
     methods: ["GET", "POST"],
     credentials:true,
   },
@@ -94,16 +97,22 @@ app.use((req, res, next) => {
   return limiter(req, res, next);
 });
 
-
-mongoose
-  .connect(MongodbConn, { maxPoolSize: 10 })
+  mongoose
+  .connect(MongodbConn, {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 30000, 
+    socketTimeoutMS: 45000, 
+    bufferCommands: false,
+    retryWrites: true,
+    retryReads: true,
+  })
   .then(() => {
     startCronJob();
     console.log("MongoDB successfully connected");
-    
   })
   .catch((error) => {
     console.log("MongoDB connection Error", error);
+    process.exit(1);
   });
 
 const redisClient = createClient({
@@ -130,6 +139,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 
 app.use("/mseal/auth-user", userrouter);
 app.use("/mseal/membership", membershiprouter);
