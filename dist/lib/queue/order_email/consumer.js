@@ -7,8 +7,9 @@ const amqplib_1 = __importDefault(require("amqplib"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const sendOrderConfirmation = require("../../../service/user/email/sendOrder");
 dotenv_1.default.config();
-const rabbitMQUrl = process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
-// const rabbitMQUrl = "amqp://guest:guest@localhost:5672";
+// const rabbitMQUrl =
+//   process.env.RABBITMQ_PRIVATE_URL || "amqp://guest:guest@localhost:5672";
+const rabbitMQUrl = "amqp://guest:guest@localhost:5672";
 const queue = "email_order_confirmation";
 const consumeEmailQueue = async () => {
     let connection;

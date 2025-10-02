@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
 const userSchema = new Schema({
+  providerId: {type:String},
   firstName: { type: String, required: true },
   lastName: { type: String, required: false},
   email: { type: String, required: true, unique: true },
@@ -14,7 +15,7 @@ const userSchema = new Schema({
   verificationCodeExpiration: { type: Date },
 },{timestamps:true});
 
-userSchema.index({email:1,phoneNumber:1,membershipId:1});
+userSchema.index({email:1,phoneNumber:1,membershipId:1,providerId:1});
 
 const User = model("User", userSchema);
 module.exports = User;

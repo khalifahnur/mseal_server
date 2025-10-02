@@ -93,6 +93,7 @@ const handleMsealWalletTicket = async (
             time
           },
           paymentStatus: "Pending",
+          isGuest:false
         });
       }
 

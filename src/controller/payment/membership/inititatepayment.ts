@@ -11,6 +11,7 @@ const Membership = require("../../../model/membership");
 const limits = require("./checkTier");
 
 type MembershipTier = "ordinary" | "bronze" | "silver" | "gold";
+type PaymentContext = "new" | "upgrade" | "renewal";
 
 const tierPrices: Record<MembershipTier, number> = {
   ordinary: 500,
@@ -30,6 +31,7 @@ interface AuthenticatedRequest extends Request {
     membershipTier: MembershipTier;
     dob?: string;
     city: string;
+    paymentContext?: PaymentContext; // Add payment context
   };
 }
 
@@ -41,6 +43,7 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
     membershipTier,
     dob,
     city,
+    paymentContext = "new", // Default to new subscription
   } = req.body;
   const userId = req.user?.id;
 
@@ -51,6 +54,7 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
   if (!userId) {
     return res.status(400).json({ error: "User ID is required" });
   }
+
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -61,17 +65,31 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
       ? await Membership.findById(user.membershipId)
       : null;
 
-    if (
-      existingMembership &&
-      existingMembership.membershipTier === membershipTier
-    ) {
-      return res
-        .status(400)
-        .json({ error: "User already has this membership tier" });
+    if (paymentContext === "renewal") {
+      if (!existingMembership) {
+        return res.status(400).json({ error: "No existing membership to renew" });
+      }
+
+      if (existingMembership.membershipTier !== membershipTier) {
+        return res.status(400).json({ 
+          error: "Renewal must be for the same membership tier" 
+        });
+      }
+
+      const today = new Date();
+      if (existingMembership.expDate && existingMembership.expDate > today) {
+        return res.status(400).json({ 
+          error: "Membership is not yet expired" 
+        });
+      }
     }
 
-    if (!tierPrices[membershipTier]) {
-      return res.status(400).json({ error: `Invalid membership tier: ${membershipTier}` });
+    if (paymentContext === "upgrade" && existingMembership) {
+      if (existingMembership.membershipTier === membershipTier) {
+        return res.status(400).json({ 
+          error: "User already has this membership tier" 
+        });
+      }
     }
 
     if (!tierPrices[membershipTier]) {
@@ -79,13 +97,19 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     let finalAmount: number;
-    if (existingMembership) {
+    let calculatedContext: PaymentContext = paymentContext;
+
+    if (paymentContext === "renewal") {
+      finalAmount = tierPrices[membershipTier];
+      calculatedContext = "renewal";
+    } else if (existingMembership && paymentContext === "upgrade") {
       finalAmount = tierPrices[membershipTier] - tierPrices[existingMembership.membershipTier as MembershipTier];
       if (finalAmount <= 0) {
         return res.status(400).json({
           error: `Cannot upgrade to ${membershipTier} as it is not higher than ${existingMembership.membershipTier}`,
         });
       }
+      calculatedContext = "upgrade";
     } else {
       finalAmount = tierPrices[membershipTier];
       if (amount && amount !== finalAmount) {
@@ -93,17 +117,20 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
           error: `Provided amount (${amount}) does not match ${membershipTier} price (${finalAmount})`,
         });
       }
+      calculatedContext = "new";
     }
 
-    const count = await Membership.countDocuments({
-      membershipTier,
-      paymentStatus: "Completed",
-    });
-
-    if (count >= limits[membershipTier]) {
-      return res.status(400).json({
-        error: `${membershipTier} tier is full, please select another.`,
+    if (calculatedContext !== "renewal") {
+      const count = await Membership.countDocuments({
+        membershipTier,
+        paymentStatus: "Completed",
       });
+
+      if (count >= limits[membershipTier]) {
+        return res.status(400).json({
+          error: `${membershipTier} tier is full, please select another.`,
+        });
+      }
     }
 
     const response = await axios.post(
@@ -121,6 +148,8 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
           membershipTier,
           dob,
           city,
+          paymentContext: calculatedContext,
+          previousTier: existingMembership?.membershipTier,
         },
       },
       {
@@ -132,33 +161,36 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
     );
 
     let membership;
-    if (existingMembership) {
+    if (existingMembership && (calculatedContext === "renewal" || calculatedContext === "upgrade")) {
       membership = existingMembership;
       membership.membershipTier = membershipTier;
       membership.amount = finalAmount;
-      membership.dob = dob || null;
-      membership.city = city;
+      membership.dob = dob || membership.dob;
+      membership.city = city || membership.city;
       membership.reference = response.data.data.reference;
       membership.paymentStatus = "Pending";
       membership.status = "Pending";
+      await membership.save();
     } else {
       membership = new Membership({
         userId,
         membershipTier,
         dob: dob || null,
         city,
-        amount:finalAmount,
+        amount: finalAmount,
         reference: response.data.data.reference,
         paymentStatus: "Pending",
         status: "Pending",
       });
+      await membership.save();
     }
-    await membership.save();
 
     res.json({
       message: "STK push initiated",
       status: true,
       reference: response.data.data.reference,
+      paymentContext: calculatedContext,
+      amount: finalAmount,
     });
   } catch (error: any) {
     console.error(

@@ -42,7 +42,7 @@ const sendTicketConfirmation = async (
       width: 400,
       margin: 2,
       color: {
-        dark: "#fae115",
+        dark: "#e16f23",
         light: "#000000"
       }
     });

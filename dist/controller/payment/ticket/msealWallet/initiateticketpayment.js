@@ -78,6 +78,7 @@ const handleMsealWalletTicket = async (req, res) => {
                         time
                     },
                     paymentStatus: "Pending",
+                    isGuest: false
                 });
             }
             event.availableTickets -= quantity;

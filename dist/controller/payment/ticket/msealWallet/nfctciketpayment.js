@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const { Request, Response } = require("express");
+const uuid_1 = require("uuid");
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid");
 const Wallet = require("../../../../model/wallet");
 const Transaction = require("../../../../model/transaction");
 const Ticket = require("../../../../model/ticket");
@@ -79,7 +78,7 @@ const handleNfcTicketPayment = async (req, res) => {
                     message: "Insufficient tickets available",
                 }));
             }
-            const reference = uuidv4();
+            const reference = (0, uuid_1.v4)();
             const existingTicket = await Ticket.findOne({
                 paymentReference: reference,
             }).session(session);

@@ -12,7 +12,7 @@ const getValidTickets = async (req, res) => {
             .map((ticket) => ({
             id: ticket._id.toString(),
             event: {
-                date: ticket.event[0].date ? new Date(ticket.event[0].date).toISOString() : null,
+                date: ticket.event.date ? new Date(ticket.event.date).toISOString() : null,
                 // match: ticket.event[0]?.match || null,
                 // venue: ticket.event[0]?.venue || null,
             },

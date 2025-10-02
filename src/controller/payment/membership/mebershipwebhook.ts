@@ -13,7 +13,7 @@ const publishToQueue = require("../../../lib/queue/membership/producer");
 dotenv.config();
 
 const PAYSTACK_SECRET = process.env.MSEAL_MEMBERSHIP_PAYSTACK_KEY || "";
-// const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
+//const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
 
 interface PaystackEvent {
   event: string;
@@ -30,12 +30,12 @@ interface PaystackEvent {
       membershipTier: string;
       dob?: string;
       city?: string;
+      paymentContext:string;
     };
   };
 }
 
 const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
-  // Verify Paystack signature
   const hash = crypto
     .createHmac("sha512", PAYSTACK_SECRET)
     .update(JSON.stringify(req.body))
@@ -53,6 +53,7 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
     event.data.channel === "mobile_money"
   ) {
     const { reference, amount, metadata } = event.data;
+    const paymentContext = metadata.paymentContext || "new";
 
     const existingMembership = await Membership.findOne({ reference });
     if (existingMembership?.paymentStatus === "Completed") {
@@ -75,9 +76,7 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
           throw new Error("Transaction verification failed");
         }
 
-        // Fetch user
         const user = await User.findById(metadata.userId).session(session);
-
         if (!user) {
           throw new Error("User not found");
         }
@@ -85,18 +84,31 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
         let membership = existingMembership;
 
         const expDate = new Date();
-        expDate.setFullYear(expDate.getFullYear() + 1);
-        membership.expDate = expDate;
+        
+        if (paymentContext === "renewal") {
+          // For renewals, extend from current expDate if not expired, else from today
+          const currentExpDate = membership.expDate;
+          const today = new Date();
+          
+          if (currentExpDate && currentExpDate > today) {
+            // Extend from current expiration date
+            expDate.setFullYear(currentExpDate.getFullYear() + 1);
+          } else {
+            // Start new year from today
+            expDate.setFullYear(expDate.getFullYear() + 1);
+          }
+        } else {
+          // New subscription or upgrade - start from today
+          expDate.setFullYear(expDate.getFullYear() + 1);
+        }
 
+        membership.expDate = expDate;
         membership.status = "Active";
         membership.paymentStatus = "Completed";
         membership.updatedAt = new Date();
         await membership.save({ session });
 
-        // wallet
-        let wallet = await Wallet.findOne({ userId: metadata.userId }).session(
-          session
-        );
+        let wallet = await Wallet.findOne({ userId: metadata.userId }).session(session);
         if (!wallet) {
           wallet = new Wallet({
             userId: metadata.userId,
@@ -116,10 +128,11 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
         const transaction = new Transaction({
           userId: metadata.userId,
           transactionType: "membership",
-          amount:amount/100,
+          amount: amount/100,
           status: "Success",
           paymentMethod: "Mpesa",
           reference,
+          //paymentContext: paymentContext, // Store context in transaction
           createdAt: new Date(),
         });
         await transaction.save({ session });
@@ -130,8 +143,11 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
           { session }
         );
 
-        // Publish email confirmation to queue
-        await publishToQueue("email_membership_confirmation", {
+        const emailType = paymentContext === "renewal" 
+          ? "email_membership_renewal" 
+          : "email_membership_confirmation";
+
+        await publishToQueue(emailType, {
           firstName: user.firstName,
           email: user.email,
           membershipTier: metadata.membershipTier,
@@ -139,9 +155,10 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
           transactionId: reference,
           billingPeriod: expDate,
           paymentMethod: "Mpesa",
-          amount:amount/100,
+          amount: amount/100,
           nextBillingDate: expDate,
           recurringAmount: amount/100,
+          //paymentContext: paymentContext,
         });
       });
 
@@ -157,5 +174,4 @@ const handlePaystackMembershipWebhook = async (req: Request, res: Response) => {
     res.status(200).json({ message: "Event ignored" });
   }
 };
-
 module.exports = handlePaystackMembershipWebhook;

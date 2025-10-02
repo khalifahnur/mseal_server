@@ -10,7 +10,7 @@ function truncateToDate(date) {
 const validateTicketById = async (req, res) => {
     try {
         const { id } = req.params;
-        const ticket = await Ticket.findOneAndUpdate({ _id: id, status: "valid" }, { $set: { status: "used" } }, { new: true }).populate("userId");
+        const ticket = await Ticket.findOne({ _id: id, status: "valid" }).populate("userId");
         if (!ticket) {
             return res.status(400).json({
                 success: false,
@@ -18,6 +18,12 @@ const validateTicketById = async (req, res) => {
             });
         }
         const event = ticket.event[0];
+        if (!event || !event.date) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid event data in ticket.",
+            });
+        }
         const eventDateOnly = truncateToDate(new Date(event.date));
         const todayOnly = truncateToDate(new Date());
         if (eventDateOnly.getTime() !== todayOnly.getTime()) {
@@ -26,14 +32,39 @@ const validateTicketById = async (req, res) => {
                 message: `Ticket is only valid on ${eventDateOnly.toDateString()}.`,
             });
         }
-        const user = await User.findById(ticket.userId);
+        ticket.status = "used";
+        await ticket.save();
+        let recipientEmail;
+        let fullName;
+        if (ticket.isGuest) {
+            if (!ticket.guestEmail) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Guest ticket email not found.",
+                });
+            }
+            recipientEmail = ticket.guestEmail;
+            fullName = "Guest User";
+        }
+        else {
+            const user = await User.findById(ticket.userId);
+            if (!user || !user.email) {
+                console.warn("User or email not found for ticket:", ticket._id);
+                return res.status(400).json({
+                    success: false,
+                    message: "User email not found.",
+                });
+            }
+            recipientEmail = user.email;
+            fullName = `${user.firstName} ${user.lastName}`;
+        }
         await sendValidTicketEmail("email_valid_ticket_confirmation", {
             ticketId: ticket.ticketId,
-            recipientEmail: user.email,
-            fullName: `${user.firstName} ${user.lastName}`,
+            recipientEmail,
+            fullName,
             eventName: event.match,
             venue: event.venue,
-            seat: ticket.seat,
+            seat: ticket.seat || "N/A",
             quantity: ticket.quantity,
             scanTime: new Date().toISOString(),
             date: event.date,
@@ -45,9 +76,11 @@ const validateTicketById = async (req, res) => {
     }
     catch (error) {
         console.error("Error validating ticket:", error);
-        return res
-            .status(500)
-            .json({ success: false, message: "Server error validating ticket." });
+        return res.status(500).json({
+            success: false,
+            message: "Server error validating ticket.",
+            details: error.message,
+        });
     }
 };
 module.exports = validateTicketById;

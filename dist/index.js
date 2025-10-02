@@ -16,6 +16,7 @@ const morgan_1 = __importDefault(require("morgan"));
 const express_session_1 = __importDefault(require("express-session"));
 const connect_redis_1 = require("connect-redis");
 const redis_1 = require("redis");
+dotenv_1.default.config();
 const socket_io_1 = require("socket.io");
 const orderConfirmPayment_1 = __importDefault(require("./socket/orderConfirmPayment"));
 const membershipConfirmPayment_1 = __importDefault(require("./socket/membershipConfirmPayment"));
@@ -42,7 +43,6 @@ const adminrouter = require("./router/admin/adminrouter");
 const staffrouter = require("./router/staff/staffrouter");
 const transactionrouter = require("./router/transaction/transactionrouter");
 const orderrouter = require("./router/order/orderrouter");
-dotenv_1.default.config();
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
 app.set('trust proxy', 1);
@@ -53,7 +53,7 @@ const corsOptions = {
     origin: [
         "https://mseal-membership.vercel.app",
         "https://mseal-master.vercel.app",
-        "http://localhost:3000"
+        "https://msealticket.vercel.app"
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
@@ -62,7 +62,7 @@ const corsOptions = {
 };
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: ["https://mseal-membership.vercel.app", "http://localhost:3000",],
+        origin: ["https://mseal-membership.vercel.app", "https://msealticket.vercel.app",],
         methods: ["GET", "POST"],
         credentials: true,
     },
@@ -86,17 +86,24 @@ app.use((req, res, next) => {
     return limiter(req, res, next);
 });
 mongoose_1.default
-    .connect(MongodbConn, { maxPoolSize: 10 })
+    .connect(MongodbConn, {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 30000,
+    socketTimeoutMS: 45000,
+    bufferCommands: false,
+    retryWrites: true,
+    retryReads: true,
+})
     .then(() => {
     startCronJob();
     console.log("MongoDB successfully connected");
 })
     .catch((error) => {
     console.log("MongoDB connection Error", error);
+    process.exit(1);
 });
 const redisClient = (0, redis_1.createClient)({
-    //url: process.env.REDIS_URL,
-    url: 'redis://localhost:6379',
+    url: process.env.REDIS_URL,
 });
 redisClient.on("error", (err) => console.error("Redis Client Error", err));
 redisClient.connect();

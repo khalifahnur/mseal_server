@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-
-const { Request, Response } = require("express");
+import { v4 as uuidv4 } from 'uuid';
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid");
 
 const Wallet = require("../../../../model/wallet");
 const Transaction = require("../../../../model/transaction");
