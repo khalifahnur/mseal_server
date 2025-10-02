@@ -14,13 +14,10 @@ const verifyCode = require("../../controller/auth/users/verifycode");
 const newPsswd = require("../../controller/auth/users/newpassword");
 const nfcStatus = require("../../controller/wallet/nfcStatus");
 const googleSignin = require("../../controller/auth/users/google-signin");
-const oauthSignin = require("../../controller/auth/others/oauthSignin");
-const fetchotherinfo = require("../../controller/auth/others/fetchotherinfo")
 
 router.post("/signUp", UserSignup);
 router.post("/signIn", UserSignin);
 router.get("/fetch-user-info", userMiddleware, userInfo);
-router.get("/fetch-other-info", userMiddleware, fetchotherinfo);
 router.post("/logout", userMiddleware, logoutUser);
 router.patch("/update-user-phone-number",userMiddleware,phoneNumber)
 router.post("/forgot-password/verify-email",resetCode),
