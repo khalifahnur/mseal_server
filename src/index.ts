@@ -57,10 +57,9 @@ const MongodbConn = process.env.MONGODB_CONN || "";
 
 const corsOptions = {
   origin: [
-    "https://mseal-membership.vercel.app",
+    "https://www.murangaseal.co.ke",
     "https://mseal-master.vercel.app",
     "https://mseal-ticket.vercel.app",
-    
   ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
@@ -70,7 +69,7 @@ const corsOptions = {
 
 const io = new Server(server, {
   cors: {
-    origin: ["https://mseal-membership.vercel.app", "https://mseal-ticket.vercel.app"],
+    origin: ["https://www.murangaseal.co.ke", "https://mseal-ticket.vercel.app"],
     methods: ["GET", "POST"],
     credentials:true,
   },
@@ -118,7 +117,7 @@ app.use((req, res, next) => {
 
 const redisClient = createClient({
   url: process.env.REDIS_URL,
-  
+
 });
 
 redisClient.on("error", (err) => console.error("Redis Client Error", err));

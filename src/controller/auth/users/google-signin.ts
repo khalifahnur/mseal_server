@@ -52,10 +52,10 @@ const googleSignin = async (req: Request, res: Response) => {
         path: "/",
         maxAge: 24 * 60 * 60 * 1000,
       })
-      .redirect("https://mseal-membership.vercel.app/home");
+      .redirect("https://www.murangaseal.co.ke/home");
   } catch (err) {
     console.error("Google auth error:", err);
-    res.redirect("https://mseal-membership.vercel.app/not-found");
+    res.redirect("https://www.murangaseal.co.ke/not-found");
   }
 };
 
