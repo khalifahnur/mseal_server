@@ -142,7 +142,6 @@ const initiateTicketPayment = async (req: AuthenticatedRequest, res: Response) =
     let email: string;
     let phoneNumber: string;
 
-    // Validate input for guest and authenticated users
     if (isGuest) {
       if (!guestEmail || !guestPhone) {
         return res.status(400).json({ error: "Email and phone number are required for ticket purchases" });
@@ -161,7 +160,6 @@ const initiateTicketPayment = async (req: AuthenticatedRequest, res: Response) =
       }
     }
 
-    // Validate event
     const event = await Event.findById(eventId);
     if (!event) {
       return res.status(404).json({ error: "Event not found" });
@@ -170,7 +168,6 @@ const initiateTicketPayment = async (req: AuthenticatedRequest, res: Response) =
       return res.status(409).json({ error: "Insufficient tickets available" });
     }
 
-    // Initiate payment with Paystack
     const response = await axios.post(
       "https://api.paystack.co/charge",
       {
@@ -200,7 +197,6 @@ const initiateTicketPayment = async (req: AuthenticatedRequest, res: Response) =
       }
     );
 
-    // Create ticket
     const ticket = new Ticket({
       userId: userId || null,
       guestEmail: isGuest ? email : undefined,

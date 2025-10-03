@@ -31,7 +31,7 @@ interface AuthenticatedRequest extends Request {
     membershipTier: MembershipTier;
     dob?: string;
     city: string;
-    paymentContext?: PaymentContext; // Add payment context
+    paymentContext?: PaymentContext;
   };
 }
 
@@ -43,7 +43,7 @@ const initiatePayment = async (req: AuthenticatedRequest, res: Response) => {
     membershipTier,
     dob,
     city,
-    paymentContext = "new", // Default to new subscription
+    paymentContext = "new",
   } = req.body;
   const userId = req.user?.id;
 

@@ -171,7 +171,6 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
           throw new Error("Transaction verification failed");
         }
 
-        // Update ticket
         existingTicket.status = "valid";
         existingTicket.paymentStatus = "Completed";
         await existingTicket.save({ session });
@@ -201,8 +200,6 @@ const handlePaystackWebhook = async (req: Request, res: Response) => {
           metadata,
         });
       });
-
-      console.log("Webhook processed successfully for reference:", reference);
       return res.status(200).json({ message: "Webhook processed successfully" });
     } catch (err: any) {
       console.error("Webhook error for reference:", reference, err);
